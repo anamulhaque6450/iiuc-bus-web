@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Bus, Lock, User, Eye, EyeOff, AlertCircle, Loader2, Mail, CheckCircle } from 'lucide-react';
+import { Bus, Lock, User, Eye, EyeOff, AlertCircle, Loader2, Mail, CheckCircle, Wifi, WifiOff } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
   const { signIn, user, userProfile, loading } = useAuth();
@@ -48,19 +48,39 @@ const LoginPage: React.FC = () => {
 
     try {
       console.log('🔐 Starting login process...');
-      const { error } = await signIn(formData.identifier, formData.password);
+      
+      // Add a timeout wrapper for the entire login process
+      const loginPromise = signIn(formData.identifier, formData.password);
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Login process timeout')), 15000)
+      );
+
+      const { error } = await Promise.race([loginPromise, timeoutPromise]) as any;
 
       if (error) {
         console.error('❌ Login error:', error);
-        setError(error.message || 'Login failed. Please try again.');
+        
+        if (error.message?.includes('timeout')) {
+          setError('Connection timeout. Please check your internet connection and try again.');
+        } else if (error.message?.includes('confirmation')) {
+          setError('Please check your email and click the confirmation link before signing in.');
+        } else if (error.message?.includes('Invalid login credentials')) {
+          setError('Invalid email/university ID or password. Please check your credentials.');
+        } else {
+          setError(error.message || 'Login failed. Please try again.');
+        }
       } else {
         console.log('✅ Login successful, waiting for redirect...');
         // Don't set loading to false here - let the auth context handle it
         return;
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('❌ Unexpected login error:', err);
-      setError('An unexpected error occurred. Please try again.');
+      if (err.message?.includes('timeout')) {
+        setError('Connection timeout. Please check your internet connection and try again.');
+      } else {
+        setError('An unexpected error occurred. Please try again.');
+      }
     }
 
     setIsLoading(false);
@@ -113,6 +133,17 @@ const LoginPage: React.FC = () => {
                   <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
                   <p className="text-red-700 text-sm">{error}</p>
                 </div>
+                
+                {/* Connection issue help */}
+                {error.includes('timeout') && (
+                  <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 flex items-start space-x-3">
+                    <WifiOff className="h-5 w-5 text-orange-500 flex-shrink-0 mt-0.5" />
+                    <div className="text-sm text-orange-700">
+                      <p className="font-medium mb-1">Connection Issue</p>
+                      <p>Please check your internet connection and try again. If the problem persists, try refreshing the page.</p>
+                    </div>
+                  </div>
+                )}
                 
                 {/* Email verification reminder */}
                 {error.includes('confirmation') && (
@@ -216,6 +247,12 @@ const LoginPage: React.FC = () => {
                 <p>Perfect! You can now sign in with the credentials you used during registration.</p>
               </div>
             </div>
+          </div>
+
+          {/* Connection Status */}
+          <div className="mt-4 flex items-center justify-center space-x-2 text-xs text-gray-500">
+            <Wifi className="h-3 w-3 text-green-500" />
+            <span>Connected to IIUC Bus System</span>
           </div>
         </div>
 

@@ -50,7 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Get initial session with timeout
         const sessionPromise = supabase.auth.getSession();
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Session timeout')), 3000)
+          setTimeout(() => reject(new Error('Session timeout')), 2000)
         );
         
         const { data: { session }, error } = await Promise.race([
@@ -95,7 +95,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log('⏰ Auth initialization timeout - forcing load completion');
         setLoading(false);
       }
-    }, 2000); // Reduced to 2 seconds
+    }, 1500); // Reduced to 1.5 seconds
 
     initializeAuth();
 
@@ -133,11 +133,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('👤 Fetching profile for user:', userId);
       
-      const { data, error } = await supabase
+      // Add timeout to profile fetch
+      const profilePromise = supabase
         .from('users')
         .select('*')
         .eq('id', userId)
         .maybeSingle();
+        
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Profile fetch timeout')), 3000)
+      );
+
+      const { data, error } = await Promise.race([
+        profilePromise,
+        timeoutPromise
+      ]) as any;
 
       if (error) {
         console.error('❌ Error fetching user profile:', error);
@@ -247,26 +257,57 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('🔐 Attempting login with:', identifier);
       
-      let { data, error } = await supabase.auth.signInWithPassword({
+      // Add timeout to sign-in process
+      const signInPromise = supabase.auth.signInWithPassword({
         email: identifier,
         password,
       });
+      
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Sign-in timeout')), 10000)
+      );
+      
+      let { data, error } = await Promise.race([
+        signInPromise,
+        timeoutPromise
+      ]) as any;
 
+      // If email login fails, try university ID lookup
       if (error && error.message.includes('Invalid login credentials')) {
         console.log('🔍 Email login failed, trying university ID lookup');
         try {
-          const { data: userData, error: userError } = await supabase
+          const lookupPromise = supabase
             .from('users')
             .select('email')
             .eq('university_id', identifier)
             .single();
+            
+          const lookupTimeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Lookup timeout')), 5000)
+          );
+
+          const { data: userData, error: userError } = await Promise.race([
+            lookupPromise,
+            lookupTimeoutPromise
+          ]) as any;
 
           if (!userError && userData) {
             console.log('✅ Found email for university ID');
-            const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+            
+            const retrySignInPromise = supabase.auth.signInWithPassword({
               email: userData.email,
               password,
             });
+            
+            const retryTimeoutPromise = new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Retry sign-in timeout')), 10000)
+            );
+            
+            const { data: authData, error: authError } = await Promise.race([
+              retrySignInPromise,
+              retryTimeoutPromise
+            ]) as any;
+            
             data = authData;
             error = authError;
           }
@@ -282,6 +323,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return { error: { ...error, message: 'Please check your email and click the confirmation link before signing in.' } };
         } else if (error.message?.includes('Invalid login credentials')) {
           return { error: { ...error, message: 'Invalid email/university ID or password. Please check your credentials.' } };
+        } else if (error.message?.includes('timeout')) {
+          return { error: { ...error, message: 'Connection timeout. Please check your internet connection and try again.' } };
         }
       } else {
         console.log('✅ Login successful:', data?.user?.email);
@@ -290,7 +333,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { error };
     } catch (error) {
       console.error('❌ Login error:', error);
-      return { error };
+      return { error: { message: 'An unexpected error occurred. Please try again.' } };
     }
   };
 
