@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { supabase, BusScheduleDB, Feedback } from '../lib/supabase';
-import { Bus, User, MessageSquare, Send, Clock, MapPin, Route, Calendar, LogOut, Loader2, Star, Navigation, Search, Zap } from 'lucide-react';
+import { Bus, User, MessageSquare, Send, Clock, MapPin, Route, Calendar, LogOut, Loader2, Star, Navigation } from 'lucide-react';
 import BusCard from '../components/BusCard';
-import SmartRouteSearch from '../components/SmartRouteSearch';
 import { BusSchedule } from '../types/BusSchedule';
 
 const StudentDashboard: React.FC = () => {
@@ -13,8 +12,6 @@ const StudentDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [submittingFeedback, setSubmittingFeedback] = useState(false);
   const [feedbackSuccess, setFeedbackSuccess] = useState(false);
-  const [selectedSchedule, setSelectedSchedule] = useState<BusSchedule | null>(null);
-  const [activeTab, setActiveTab] = useState<'search' | 'all' | 'favorites'>('search');
 
   useEffect(() => {
     fetchSchedules();
@@ -93,11 +90,6 @@ const StudentDashboard: React.FC = () => {
 
   const handleLogout = async () => {
     await signOut();
-  };
-
-  const handleScheduleSelect = (schedule: BusSchedule) => {
-    setSelectedSchedule(schedule);
-    setActiveTab('all'); // Switch to all schedules tab to show the selected schedule
   };
 
   if (loading) {
@@ -199,98 +191,28 @@ const StudentDashboard: React.FC = () => {
               </div>
             </div>
 
-            {/* Tab Navigation */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-200">
-              <div className="flex border-b border-gray-200">
-                <button
-                  onClick={() => setActiveTab('search')}
-                  className={`flex items-center space-x-2 px-6 py-4 font-semibold transition-colors ${
-                    activeTab === 'search'
-                      ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                  }`}
-                >
-                  <Search className="h-5 w-5" />
-                  <span>Smart Search</span>
-                  <span className="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xs px-2 py-1 rounded-full">
-                    AI
-                  </span>
-                </button>
-                <button
-                  onClick={() => setActiveTab('all')}
-                  className={`flex items-center space-x-2 px-6 py-4 font-semibold transition-colors ${
-                    activeTab === 'all'
-                      ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                  }`}
-                >
-                  <Bus className="h-5 w-5" />
-                  <span>All Schedules</span>
-                  <span className="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                    {schedules.length}
-                  </span>
-                </button>
+            {/* Bus Schedules */}
+            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
+              <div className="flex items-center space-x-3 mb-6">
+                <Bus className="h-6 w-6 text-blue-600" />
+                <h3 className="text-xl font-bold text-gray-900">
+                  Your Bus Schedules ({userProfile?.gender})
+                </h3>
               </div>
-
-              <div className="p-6">
-                {/* Smart Search Tab */}
-                {activeTab === 'search' && (
-                  <div>
-                    <div className="mb-6">
-                      <div className="flex items-center space-x-3 mb-4">
-                        <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-full p-2">
-                          <Zap className="h-5 w-5 text-white" />
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-bold text-gray-900">AI-Powered Route Search</h3>
-                          <p className="text-gray-600">Find your perfect bus route with intelligent search</p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <SmartRouteSearch
-                      schedules={schedules}
-                      userGender={userProfile?.gender}
-                      onScheduleSelect={handleScheduleSelect}
-                    />
-                  </div>
-                )}
-
-                {/* All Schedules Tab */}
-                {activeTab === 'all' && (
-                  <div>
-                    <div className="flex items-center space-x-3 mb-6">
-                      <Bus className="h-6 w-6 text-blue-600" />
-                      <h3 className="text-xl font-bold text-gray-900">
-                        Your Bus Schedules ({userProfile?.gender})
-                      </h3>
-                    </div>
-                    
-                    {schedules.length > 0 ? (
-                      <div className="grid grid-cols-1 gap-6">
-                        {schedules.map((schedule) => (
-                          <div
-                            key={schedule.id}
-                            className={`transition-all duration-300 ${
-                              selectedSchedule?.id === schedule.id 
-                                ? 'ring-4 ring-blue-500/20 scale-[1.02]' 
-                                : ''
-                            }`}
-                          >
-                            <BusCard schedule={schedule} />
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-12">
-                        <Bus className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                        <h4 className="text-lg font-semibold text-gray-600 mb-2">No schedules available</h4>
-                        <p className="text-gray-500">Bus schedules for {userProfile?.gender} students will appear here.</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
+              
+              {schedules.length > 0 ? (
+                <div className="grid grid-cols-1 gap-6">
+                  {schedules.map((schedule) => (
+                    <BusCard key={schedule.id} schedule={schedule} />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <Bus className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                  <h4 className="text-lg font-semibold text-gray-600 mb-2">No schedules available</h4>
+                  <p className="text-gray-500">Bus schedules for {userProfile?.gender} students will appear here.</p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -328,40 +250,6 @@ const StudentDashboard: React.FC = () => {
                 <div>
                   <label className="text-sm font-medium text-gray-500">Role</label>
                   <p className="text-gray-900 capitalize">{userProfile?.role}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Search Tips */}
-            <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl shadow-lg p-6 border border-purple-200">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full p-2">
-                  <Zap className="h-5 w-5 text-white" />
-                </div>
-                <h3 className="font-bold text-gray-900">Search Tips</h3>
-              </div>
-              
-              <div className="space-y-3 text-sm">
-                <div className="flex items-start space-x-2">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
-                  <div>
-                    <p className="font-medium text-gray-800">Search by time:</p>
-                    <p className="text-gray-600">"7:00 AM" or just "7"</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
-                  <div>
-                    <p className="font-medium text-gray-800">Search by location:</p>
-                    <p className="text-gray-600">"BOT", "Agrabad", "Chatteswari"</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
-                  <div>
-                    <p className="font-medium text-gray-800">Smart keywords:</p>
-                    <p className="text-gray-600">"morning", "return", "friday"</p>
-                  </div>
                 </div>
               </div>
             </div>
@@ -414,12 +302,9 @@ const StudentDashboard: React.FC = () => {
               <h3 className="font-bold text-gray-900 mb-4">Quick Actions</h3>
               
               <div className="space-y-3">
-                <button 
-                  onClick={() => setActiveTab('search')}
-                  className="w-full flex items-center space-x-3 px-4 py-3 bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-colors"
-                >
-                  <Search className="h-4 w-4" />
-                  <span>Smart Route Search</span>
+                <button className="w-full flex items-center space-x-3 px-4 py-3 bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-colors">
+                  <Clock className="h-4 w-4" />
+                  <span>View Today's Schedule</span>
                 </button>
                 <button className="w-full flex items-center space-x-3 px-4 py-3 bg-purple-50 text-purple-700 rounded-xl hover:bg-purple-100 transition-colors">
                   <Calendar className="h-4 w-4" />

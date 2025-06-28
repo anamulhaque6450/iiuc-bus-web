@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { supabase, BusScheduleDB, User } from '../lib/supabase';
-import { Bus, Users, GraduationCap, LogOut, Loader2, Search, Filter, Calendar, Clock, MapPin } from 'lucide-react';
+import { Bus, Users, GraduationCap, LogOut, Loader2, Search, Filter, Calendar, Clock, MapPin, BarChart3 } from 'lucide-react';
 import BusCard from '../components/BusCard';
+import TeacherAnalytics from '../components/TeacherAnalytics';
 import { BusSchedule } from '../types/BusSchedule';
 
 const TeacherDashboard: React.FC = () => {
@@ -12,6 +13,7 @@ const TeacherDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'regular' | 'friday'>('all');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'schedules' | 'students'>('analytics');
 
   useEffect(() => {
     fetchData();
@@ -174,131 +176,149 @@ const TeacherDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Search and Filter */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200 mb-8">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search schedules or students..."
-                className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
-              />
-            </div>
-            
-            <div className="relative">
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <select
-                value={filterType}
-                onChange={(e) => setFilterType(e.target.value as any)}
-                className="pl-12 pr-8 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 appearance-none cursor-pointer"
-              >
-                <option value="all">All Schedules</option>
-                <option value="regular">Regular Only</option>
-                <option value="friday">Friday Only</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-          
-          {/* Bus Schedules */}
-          <div className="xl:col-span-2">
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
-              <div className="flex items-center space-x-3 mb-6">
-                <Bus className="h-6 w-6 text-blue-600" />
-                <h3 className="text-xl font-bold text-gray-900">
-                  All Bus Schedules ({filteredSchedules.length})
-                </h3>
-              </div>
-              
-              {filteredSchedules.length > 0 ? (
-                <div className="grid grid-cols-1 gap-6 max-h-[800px] overflow-y-auto">
-                  {filteredSchedules.map((schedule) => (
-                    <BusCard key={schedule.id} schedule={schedule} />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <Bus className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                  <h4 className="text-lg font-semibold text-gray-600 mb-2">No schedules found</h4>
-                  <p className="text-gray-500">Try adjusting your search or filter criteria.</p>
-                </div>
-              )}
-            </div>
+        {/* Tab Navigation */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 mb-8">
+          <div className="flex border-b border-gray-200">
+            <button
+              onClick={() => setActiveTab('analytics')}
+              className={`flex items-center space-x-2 px-6 py-4 font-semibold transition-colors ${
+                activeTab === 'analytics'
+                  ? 'text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              <BarChart3 className="h-5 w-5" />
+              <span>Smart Analytics</span>
+              <span className="bg-gradient-to-r from-emerald-500 to-green-600 text-white text-xs px-2 py-1 rounded-full">
+                AI
+              </span>
+            </button>
+            <button
+              onClick={() => setActiveTab('schedules')}
+              className={`flex items-center space-x-2 px-6 py-4 font-semibold transition-colors ${
+                activeTab === 'schedules'
+                  ? 'text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              <Bus className="h-5 w-5" />
+              <span>All Schedules</span>
+              <span className="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+                {schedules.length}
+              </span>
+            </button>
+            <button
+              onClick={() => setActiveTab('students')}
+              className={`flex items-center space-x-2 px-6 py-4 font-semibold transition-colors ${
+                activeTab === 'students'
+                  ? 'text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              <Users className="h-5 w-5" />
+              <span>Students</span>
+              <span className="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+                {students.length}
+              </span>
+            </button>
           </div>
 
-          {/* Students List */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
-              <div className="flex items-center space-x-3 mb-6">
-                <Users className="h-6 w-6 text-emerald-600" />
-                <h3 className="text-xl font-bold text-gray-900">
-                  Students ({filteredStudents.length})
-                </h3>
-              </div>
-              
-              <div className="space-y-3 max-h-[600px] overflow-y-auto">
-                {filteredStudents.map((student) => (
-                  <div key={student.id} className="p-4 bg-gray-50 rounded-xl border border-gray-200">
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold ${
-                        student.gender === 'Male' ? 'bg-blue-500' : 'bg-pink-500'
-                      }`}>
-                        {student.name.charAt(0).toUpperCase()}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-gray-900 truncate">{student.name}</p>
-                        <p className="text-sm text-gray-600">{student.university_id}</p>
-                        <p className="text-xs text-gray-500">{student.gender} • {student.email}</p>
-                      </div>
-                    </div>
+          <div className="p-6">
+            {/* Smart Analytics Tab */}
+            {activeTab === 'analytics' && (
+              <TeacherAnalytics schedules={schedules} students={students} />
+            )}
+
+            {/* All Schedules Tab */}
+            {activeTab === 'schedules' && (
+              <div>
+                {/* Search and Filter */}
+                <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                  <div className="flex-1 relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      type="text"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      placeholder="Search schedules..."
+                      className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
+                    />
                   </div>
-                ))}
-                
-                {filteredStudents.length === 0 && (
-                  <div className="text-center py-8">
-                    <Users className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500">No students found</p>
+                  
+                  <div className="relative">
+                    <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <select
+                      value={filterType}
+                      onChange={(e) => setFilterType(e.target.value as any)}
+                      className="pl-12 pr-8 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200 appearance-none cursor-pointer"
+                    >
+                      <option value="all">All Schedules</option>
+                      <option value="regular">Regular Only</option>
+                      <option value="friday">Friday Only</option>
+                    </select>
+                  </div>
+                </div>
+
+                {filteredSchedules.length > 0 ? (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {filteredSchedules.map((schedule) => (
+                      <BusCard key={schedule.id} schedule={schedule} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Bus className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                    <h4 className="text-lg font-semibold text-gray-600 mb-2">No schedules found</h4>
+                    <p className="text-gray-500">Try adjusting your search or filter criteria.</p>
                   </div>
                 )}
               </div>
-            </div>
+            )}
 
-            {/* Quick Stats */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
-              <h3 className="font-bold text-gray-900 mb-4">Quick Statistics</h3>
-              
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Male Students</span>
-                  <span className="font-semibold text-blue-600">
-                    {students.filter(s => s.gender === 'Male').length}
-                  </span>
+            {/* Students Tab */}
+            {activeTab === 'students' && (
+              <div>
+                {/* Search */}
+                <div className="mb-6">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      type="text"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      placeholder="Search students..."
+                      className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
+                    />
+                  </div>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Female Students</span>
-                  <span className="font-semibold text-pink-600">
-                    {students.filter(s => s.gender === 'Female').length}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Regular Schedules</span>
-                  <span className="font-semibold text-green-600">
-                    {schedules.filter(s => s.scheduleType === 'Regular').length}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Friday Schedules</span>
-                  <span className="font-semibold text-orange-600">
-                    {schedules.filter(s => s.scheduleType === 'Friday').length}
-                  </span>
+
+                <div className="space-y-3">
+                  {filteredStudents.map((student) => (
+                    <div key={student.id} className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold ${
+                          student.gender === 'Male' ? 'bg-blue-500' : 'bg-pink-500'
+                        }`}>
+                          {student.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-gray-900 truncate">{student.name}</p>
+                          <p className="text-sm text-gray-600">{student.university_id}</p>
+                          <p className="text-xs text-gray-500">{student.gender} • {student.email}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {filteredStudents.length === 0 && (
+                    <div className="text-center py-8">
+                      <Users className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                      <p className="text-gray-500">No students found</p>
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
