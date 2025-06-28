@@ -29,15 +29,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     let mounted = true;
+    let initTimeout: NodeJS.Timeout;
 
     const initializeAuth = async () => {
       try {
         console.log('🔄 Initializing auth...');
         
+        // Check if we have valid Supabase credentials
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+        
+        if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === 'https://placeholder.supabase.co') {
+          console.warn('⚠️ Supabase credentials missing - running in offline mode');
+          if (mounted) {
+            setLoading(false);
+          }
+          return;
+        }
+        
         // Get initial session with timeout
         const sessionPromise = supabase.auth.getSession();
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Session timeout')), 5000)
+          setTimeout(() => reject(new Error('Session timeout')), 3000)
         );
         
         const { data: { session }, error } = await Promise.race([
@@ -76,13 +89,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     };
 
-    // Set a maximum initialization time
-    const initTimeout = setTimeout(() => {
+    // Set a maximum initialization time - CRITICAL FIX
+    initTimeout = setTimeout(() => {
       if (mounted && loading) {
-        console.log('⏰ Auth initialization timeout, setting loading to false');
+        console.log('⏰ Auth initialization timeout - forcing load completion');
         setLoading(false);
       }
-    }, 3000);
+    }, 2000); // Reduced to 2 seconds
 
     initializeAuth();
 
@@ -109,7 +122,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return () => {
       mounted = false;
-      clearTimeout(initTimeout);
+      if (initTimeout) {
+        clearTimeout(initTimeout);
+      }
       subscription.unsubscribe();
     };
   }, []);
@@ -133,38 +148,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (data) {
         console.log('✅ Profile found:', { name: data.name, role: data.role });
         setUserProfile(data);
-        setLoading(false);
       } else {
         console.log('⚠️ No profile found for user:', userId);
-        // Profile doesn't exist - this should have been created by the trigger
-        // Let's wait a moment and try again, or create it manually
-        setTimeout(async () => {
-          await createUserProfileManually(userId);
-        }, 1000);
+        // Try to create profile from auth metadata
+        await createUserProfileFromAuth(userId);
       }
+      
+      setLoading(false);
     } catch (error) {
       console.error('❌ Error fetching user profile:', error);
       setLoading(false);
     }
   };
 
-  const createUserProfileManually = async (userId: string) => {
+  const createUserProfileFromAuth = async (userId: string) => {
     try {
-      console.log('🔨 Manually creating user profile for:', userId);
+      console.log('🔨 Creating user profile from auth metadata');
       
-      // Get user data from auth
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       
       if (userError || !user) {
         console.error('❌ Error getting user data:', userError);
-        setLoading(false);
         return;
       }
 
       const metadata = user.user_metadata || {};
-      console.log('📋 User metadata:', metadata);
-
-      // Create profile with metadata or defaults
+      
       const profileData = {
         id: userId,
         email: user.email!,
@@ -183,16 +192,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) {
         console.error('❌ Error creating user profile:', error);
-        setLoading(false);
         return;
       }
 
       console.log('✅ Profile created successfully:', data);
       setUserProfile(data);
-      setLoading(false);
     } catch (error) {
       console.error('❌ Error creating user profile:', error);
-      setLoading(false);
     }
   };
 
@@ -200,7 +206,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('📝 Signing up user:', email);
       
-      // Sign up the user with Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
@@ -227,13 +232,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         needsConfirmation: !!authData.user && !authData.session
       });
 
-      // Check if email confirmation is required
       if (authData.user && !authData.session) {
-        console.log('📧 Email confirmation required');
-        return { 
-          error: null, 
-          needsConfirmation: true 
-        };
+        return { error: null, needsConfirmation: true };
       }
 
       return { error: null };
@@ -247,13 +247,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('🔐 Attempting login with:', identifier);
       
-      // Try to sign in with email first
       let { data, error } = await supabase.auth.signInWithPassword({
         email: identifier,
         password,
       });
 
-      // If email login fails, try to find user by university_id and use their email
       if (error && error.message.includes('Invalid login credentials')) {
         console.log('🔍 Email login failed, trying university ID lookup');
         try {
@@ -280,7 +278,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error) {
         console.error('❌ Login error:', error);
         
-        // Provide more specific error messages
         if (error.message?.includes('Email not confirmed')) {
           return { error: { ...error, message: 'Please check your email and click the confirmation link before signing in.' } };
         } else if (error.message?.includes('Invalid login credentials')) {

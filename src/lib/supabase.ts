@@ -7,27 +7,28 @@ console.log('🔧 Supabase Configuration Check:');
 console.log('URL:', supabaseUrl ? '✅ Set' : '❌ Missing');
 console.log('Anon Key:', supabaseAnonKey ? '✅ Set' : '❌ Missing');
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('❌ Missing Supabase environment variables');
-  console.error('Please check your .env file contains:');
-  console.error('VITE_SUPABASE_URL=your_supabase_url');
-  console.error('VITE_SUPABASE_ANON_KEY=your_supabase_anon_key');
-  // Don't throw error, just log it to prevent app crash
-}
+// Create client even if credentials are missing (with fallbacks)
+export const supabase = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co', 
+  supabaseAnonKey || 'placeholder-key'
+);
 
-export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '');
-
-// Test the connection only if we have valid credentials
-if (supabaseUrl && supabaseAnonKey) {
-  supabase.auth.getSession().then(({ data, error }) => {
-    if (error) {
-      console.error('❌ Supabase connection error:', error);
-    } else {
-      console.log('✅ Supabase connected successfully');
-    }
-  }).catch((error) => {
-    console.error('❌ Supabase connection failed:', error);
-  });
+// Test connection only if we have valid credentials
+if (supabaseUrl && supabaseAnonKey && supabaseUrl !== 'https://placeholder.supabase.co') {
+  // Non-blocking connection test
+  setTimeout(() => {
+    supabase.auth.getSession().then(({ data, error }) => {
+      if (error) {
+        console.error('❌ Supabase connection error:', error.message);
+      } else {
+        console.log('✅ Supabase connected successfully');
+      }
+    }).catch((error) => {
+      console.error('❌ Supabase connection failed:', error.message);
+    });
+  }, 100);
+} else {
+  console.warn('⚠️ Supabase credentials missing - running in offline mode');
 }
 
 // Database types
