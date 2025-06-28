@@ -31,7 +31,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
-      if (session?.user) {
+      if (session?.user && session.user.email_confirmed_at) {
         fetchUserProfile(session.user.id);
       } else {
         setLoading(false);
@@ -42,7 +42,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, session?.user?.email);
       setUser(session?.user ?? null);
-      if (session?.user) {
+      
+      if (session?.user && session.user.email_confirmed_at) {
         await fetchUserProfile(session.user.id);
       } else {
         setUserProfile(null);
@@ -55,17 +56,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUserProfile = async (userId: string) => {
     try {
+      // Use a simple query without RLS complications
       const { data, error } = await supabase
         .from('users')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle(); // Use maybeSingle to avoid errors if no profile exists
 
       if (error) {
         console.error('Error fetching user profile:', error);
-        // If user profile doesn't exist but user is authenticated, 
-        // this might be a newly signed up user whose profile hasn't been created yet
-      } else {
+      } else if (data) {
         setUserProfile(data);
       }
     } catch (error) {
@@ -84,7 +84,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/login`
+          emailRedirectTo: `${window.location.origin}/login`,
+          data: {
+            name: userData.name,
+            university_id: userData.university_id,
+            mobile: userData.mobile,
+            gender: userData.gender,
+            role: userData.role
+          }
         }
       });
 
@@ -100,21 +107,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
       }
 
-      if (authData.user) {
-        // Create the user profile
-        const { error: profileError } = await supabase
-          .from('users')
-          .insert([
-            {
-              id: authData.user.id,
-              email: authData.user.email!,
-              ...userData,
-            },
-          ]);
+      // If user is immediately confirmed, create profile
+      if (authData.user && authData.session) {
+        try {
+          const { error: profileError } = await supabase
+            .from('users')
+            .insert([
+              {
+                id: authData.user.id,
+                email: authData.user.email!,
+                ...userData,
+              },
+            ]);
 
-        if (profileError) {
+          if (profileError) {
+            console.error('Profile creation error:', profileError);
+            // Don't return error here as auth was successful
+          }
+        } catch (profileError) {
           console.error('Profile creation error:', profileError);
-          return { error: profileError };
         }
       }
 
@@ -140,24 +151,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // If email login fails, try to find user by university_id and use their email
       if (error && error.message.includes('Invalid login credentials')) {
         try {
+          // Use a direct query to avoid RLS issues
           const { data: userData, error: userError } = await supabase
-            .from('users')
-            .select('email')
-            .eq('university_id', identifier)
-            .limit(1);
+            .rpc('get_user_email_by_university_id', { 
+              university_id_param: identifier 
+            });
 
-          // Check if we found a user and the query was successful
-          if (!userError && userData && userData.length > 0) {
+          if (!userError && userData) {
             const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-              email: userData[0].email,
+              email: userData,
               password,
             });
             data = authData;
             error = authError;
           }
-          // If no user found by university_id, keep the original error
         } catch (fallbackError) {
-          // If there's an error in the fallback, keep the original authentication error
           console.error('Fallback login error:', fallbackError);
         }
       }

@@ -40,6 +40,13 @@ const SignupPage: React.FC = () => {
     setIsLoading(true);
 
     // Validation
+    if (!formData.name.trim() || !formData.email.trim() || !formData.university_id.trim() || 
+        !formData.mobile.trim() || !formData.password.trim()) {
+      setError('Please fill in all required fields');
+      setIsLoading(false);
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       setIsLoading(false);
@@ -60,6 +67,13 @@ const SignupPage: React.FC = () => {
       return;
     }
 
+    // Check university ID format (basic validation)
+    if (formData.university_id.length < 3) {
+      setError('University ID must be at least 3 characters long');
+      setIsLoading(false);
+      return;
+    }
+
     const { error, needsConfirmation: confirmationRequired } = await signUp(formData.email, formData.password, {
       name: formData.name,
       email: formData.email,
@@ -70,10 +84,13 @@ const SignupPage: React.FC = () => {
     });
 
     if (error) {
-      if (error.message?.includes('already registered')) {
+      console.error('Signup error:', error);
+      if (error.message?.includes('already registered') || error.message?.includes('already been registered')) {
         setError('This email is already registered. Please try logging in instead.');
       } else if (error.message?.includes('email')) {
         setError('Please enter a valid email address.');
+      } else if (error.message?.includes('password')) {
+        setError('Password must be at least 6 characters long.');
       } else {
         setError(error.message || 'Registration failed. Please try again.');
       }
@@ -190,6 +207,7 @@ const SignupPage: React.FC = () => {
                   placeholder="Enter your full name"
                   className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-gray-900 placeholder-gray-500"
                   required
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -210,6 +228,7 @@ const SignupPage: React.FC = () => {
                   placeholder="Enter your email address"
                   className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-gray-900 placeholder-gray-500"
                   required
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -230,6 +249,7 @@ const SignupPage: React.FC = () => {
                   placeholder="Enter your student/employee ID"
                   className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-gray-900 placeholder-gray-500"
                   required
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -250,6 +270,7 @@ const SignupPage: React.FC = () => {
                   placeholder="Enter your mobile number"
                   className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-gray-900 placeholder-gray-500"
                   required
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -269,6 +290,7 @@ const SignupPage: React.FC = () => {
                     onChange={handleChange}
                     className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-gray-900 appearance-none cursor-pointer"
                     required
+                    disabled={isLoading}
                   >
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
@@ -289,6 +311,7 @@ const SignupPage: React.FC = () => {
                     onChange={handleChange}
                     className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-gray-900 appearance-none cursor-pointer"
                     required
+                    disabled={isLoading}
                   >
                     <option value="student">Student</option>
                     <option value="teacher">Teacher/Staff</option>
@@ -313,11 +336,13 @@ const SignupPage: React.FC = () => {
                   placeholder="Create a password (min. 6 characters)"
                   className="w-full pl-12 pr-12 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-gray-900 placeholder-gray-500"
                   required
+                  disabled={isLoading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  disabled={isLoading}
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
@@ -340,11 +365,13 @@ const SignupPage: React.FC = () => {
                   placeholder="Confirm your password"
                   className="w-full pl-12 pr-12 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-gray-900 placeholder-gray-500"
                   required
+                  disabled={isLoading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  disabled={isLoading}
                 >
                   {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>

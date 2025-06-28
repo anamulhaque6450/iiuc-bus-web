@@ -28,13 +28,22 @@ const LoginPage: React.FC = () => {
     setError('');
     setIsLoading(true);
 
+    if (!formData.identifier.trim() || !formData.password.trim()) {
+      setError('Please fill in all fields');
+      setIsLoading(false);
+      return;
+    }
+
     const { error } = await signIn(formData.identifier, formData.password);
 
     if (error) {
+      console.error('Login error:', error);
       if (error.message?.includes('Email not confirmed')) {
         setError('Please check your email and click the confirmation link before signing in.');
       } else if (error.message?.includes('Invalid login credentials')) {
         setError('Invalid email/university ID or password. Please check your credentials and try again.');
+      } else if (error.message?.includes('too_many_requests')) {
+        setError('Too many login attempts. Please wait a moment before trying again.');
       } else {
         setError(error.message || 'Login failed. Please try again.');
       }
@@ -131,6 +140,7 @@ const LoginPage: React.FC = () => {
                   placeholder="Enter your email or university ID"
                   className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-gray-900 placeholder-gray-500"
                   required
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -151,11 +161,13 @@ const LoginPage: React.FC = () => {
                   placeholder="Enter your password"
                   className="w-full pl-12 pr-12 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-gray-900 placeholder-gray-500"
                   required
+                  disabled={isLoading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  disabled={isLoading}
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
