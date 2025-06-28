@@ -66,6 +66,22 @@ export interface Feedback {
   user?: User;
 }
 
+export interface Complaint {
+  id: string;
+  user_id: string;
+  title: string;
+  description: string;
+  category: 'delay' | 'safety' | 'driver_behavior' | 'bus_condition' | 'route_issue' | 'other';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  status: 'pending' | 'in_progress' | 'resolved' | 'closed';
+  bus_route?: string;
+  incident_time?: string;
+  created_at: string;
+  resolved_at?: string;
+  admin_response?: string;
+  user?: User;
+}
+
 export interface Notice {
   id: string;
   title: string;
