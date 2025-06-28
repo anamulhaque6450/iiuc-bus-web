@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Bus, Lock, User, Eye, EyeOff, AlertCircle, Loader2, Mail, Phone, GraduationCap, Users } from 'lucide-react';
+import { Bus, Lock, User, Eye, EyeOff, AlertCircle, Loader2, Mail, Phone, GraduationCap, Users, CheckCircle } from 'lucide-react';
 
 const SignupPage: React.FC = () => {
   const { signUp, user, userProfile, loading } = useAuth();
@@ -19,6 +19,7 @@ const SignupPage: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [needsConfirmation, setNeedsConfirmation] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   // Redirect if already logged in
@@ -35,6 +36,7 @@ const SignupPage: React.FC = () => {
     e.preventDefault();
     setError('');
     setSuccess('');
+    setNeedsConfirmation(false);
     setIsLoading(true);
 
     // Validation
@@ -50,7 +52,15 @@ const SignupPage: React.FC = () => {
       return;
     }
 
-    const { error } = await signUp(formData.email, formData.password, {
+    // Check for valid email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address');
+      setIsLoading(false);
+      return;
+    }
+
+    const { error, needsConfirmation: confirmationRequired } = await signUp(formData.email, formData.password, {
       name: formData.name,
       email: formData.email,
       university_id: formData.university_id,
@@ -60,9 +70,18 @@ const SignupPage: React.FC = () => {
     });
 
     if (error) {
-      setError(error.message || 'Registration failed. Please try again.');
+      if (error.message?.includes('already registered')) {
+        setError('This email is already registered. Please try logging in instead.');
+      } else if (error.message?.includes('email')) {
+        setError('Please enter a valid email address.');
+      } else {
+        setError(error.message || 'Registration failed. Please try again.');
+      }
+    } else if (confirmationRequired) {
+      setNeedsConfirmation(true);
+      setSuccess('Registration successful! Please check your email and click the confirmation link to activate your account.');
     } else {
-      setSuccess('Registration successful! Please check your email to verify your account, then sign in.');
+      setSuccess('Registration successful! You can now sign in.');
     }
 
     setIsLoading(false);
@@ -118,6 +137,21 @@ const SignupPage: React.FC = () => {
 
         {/* Signup Form */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 p-8">
+          
+          {/* Success Message for Email Confirmation */}
+          {needsConfirmation && (
+            <div className="mb-6 bg-blue-50 border border-blue-200 rounded-xl p-4">
+              <div className="flex items-start space-x-3">
+                <Mail className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                <div className="text-sm text-blue-700">
+                  <p className="font-semibold mb-2">Check Your Email!</p>
+                  <p className="mb-2">We've sent a confirmation link to <strong>{formData.email}</strong></p>
+                  <p>Please click the link in your email to activate your account, then return here to sign in.</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Error Message */}
             {error && (
@@ -128,12 +162,15 @@ const SignupPage: React.FC = () => {
             )}
 
             {/* Success Message */}
-            {success && (
+            {success && !needsConfirmation && (
               <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center space-x-3">
-                <div className="h-5 w-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                  <div className="h-2 w-2 bg-white rounded-full"></div>
+                <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+                <div className="text-sm text-green-700">
+                  <p className="font-semibold">{success}</p>
+                  <Link to="/login" className="text-green-600 hover:text-green-800 font-medium underline">
+                    Go to Login Page →
+                  </Link>
                 </div>
-                <p className="text-green-700 text-sm">{success}</p>
               </div>
             )}
 

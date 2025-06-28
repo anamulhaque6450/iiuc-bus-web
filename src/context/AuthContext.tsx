@@ -6,7 +6,7 @@ interface AuthContextType {
   user: SupabaseUser | null;
   userProfile: User | null;
   loading: boolean;
-  signUp: (email: string, password: string, userData: Omit<User, 'id' | 'created_at'>) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, userData: Omit<User, 'id' | 'created_at'>) => Promise<{ error: any; needsConfirmation?: boolean }>;
   signIn: (identifier: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<User>) => Promise<{ error: any }>;
@@ -40,6 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.email);
       setUser(session?.user ?? null);
       if (session?.user) {
         await fetchUserProfile(session.user.id);
@@ -62,6 +63,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) {
         console.error('Error fetching user profile:', error);
+        // If user profile doesn't exist but user is authenticated, 
+        // this might be a newly signed up user whose profile hasn't been created yet
       } else {
         setUserProfile(data);
       }
@@ -80,14 +83,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/login`
+        }
       });
 
       if (authError) {
         return { error: authError };
       }
 
+      // Check if email confirmation is required
+      if (authData.user && !authData.session) {
+        return { 
+          error: null, 
+          needsConfirmation: true 
+        };
+      }
+
       if (authData.user) {
-        // Then, create the user profile
+        // Create the user profile
         const { error: profileError } = await supabase
           .from('users')
           .insert([
@@ -99,12 +113,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           ]);
 
         if (profileError) {
+          console.error('Profile creation error:', profileError);
           return { error: profileError };
         }
       }
 
       return { error: null };
     } catch (error) {
+      console.error('Signup error:', error);
       return { error };
     } finally {
       setLoading(false);
@@ -148,6 +164,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       return { error };
     } catch (error) {
+      console.error('Login error:', error);
       return { error };
     } finally {
       setLoading(false);

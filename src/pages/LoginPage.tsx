@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Bus, Lock, User, Eye, EyeOff, AlertCircle, Loader2, Mail } from 'lucide-react';
+import { Bus, Lock, User, Eye, EyeOff, AlertCircle, Loader2, Mail, Info } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
   const { signIn, user, userProfile, loading } = useAuth();
@@ -31,7 +31,13 @@ const LoginPage: React.FC = () => {
     const { error } = await signIn(formData.identifier, formData.password);
 
     if (error) {
-      setError('Invalid login credentials. Please check your email/university ID and password.');
+      if (error.message?.includes('Email not confirmed')) {
+        setError('Please check your email and click the confirmation link before signing in.');
+      } else if (error.message?.includes('Invalid login credentials')) {
+        setError('Invalid email/university ID or password. Please check your credentials and try again.');
+      } else {
+        setError(error.message || 'Login failed. Please try again.');
+      }
     }
 
     setIsLoading(false);
@@ -97,13 +103,15 @@ const LoginPage: React.FC = () => {
                 </div>
                 
                 {/* Email verification reminder */}
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start space-x-3">
-                  <Mail className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
-                  <div className="text-sm text-blue-700">
-                    <p className="font-medium mb-1">Recently signed up?</p>
-                    <p>Check your email for a verification link. You must verify your email address before you can log in.</p>
+                {error.includes('Invalid') && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start space-x-3">
+                    <Mail className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                    <div className="text-sm text-blue-700">
+                      <p className="font-medium mb-1">Recently signed up?</p>
+                      <p>Check your email for a verification link. You must verify your email address before you can log in.</p>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
@@ -184,12 +192,14 @@ const LoginPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Demo Notice */}
-          <div className="mt-6 p-4 bg-amber-50 rounded-xl border border-amber-200">
-            <p className="text-sm font-semibold text-amber-800 mb-2">Demo Access:</p>
-            <div className="text-xs text-amber-700 space-y-1">
-              <p>To test the application, please create an account using the signup page.</p>
-              <p>Demo users need to be registered first before they can log in.</p>
+          {/* Info Notice */}
+          <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
+            <div className="flex items-start space-x-3">
+              <Info className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
+              <div className="text-sm text-blue-700">
+                <p className="font-semibold mb-1">Getting Started:</p>
+                <p>Create a new account using the signup page. After email verification, you can log in with your credentials.</p>
+              </div>
             </div>
           </div>
         </div>
