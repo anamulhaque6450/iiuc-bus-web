@@ -29,23 +29,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     let mounted = true;
+    let timeoutId: NodeJS.Timeout;
 
     const initializeAuth = async () => {
       try {
-        console.log('Initializing auth...');
+        console.log('🔄 Initializing auth...');
         
+        // Set a timeout to ensure loading doesn't hang forever
+        timeoutId = setTimeout(() => {
+          if (mounted) {
+            console.log('⏰ Auth initialization timeout, setting loading to false');
+            setLoading(false);
+          }
+        }, 5000); // 5 second timeout
+
         // Get initial session
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
-          console.error('Error getting session:', error);
+          console.error('❌ Error getting session:', error);
           if (mounted) {
+            clearTimeout(timeoutId);
             setLoading(false);
           }
           return;
         }
 
-        console.log('Initial session:', session?.user?.email, 'confirmed:', session?.user?.email_confirmed_at);
+        console.log('✅ Session check complete:', {
+          hasUser: !!session?.user,
+          email: session?.user?.email,
+          confirmed: !!session?.user?.email_confirmed_at
+        });
         
         if (mounted) {
           setUser(session?.user ?? null);
@@ -53,12 +67,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (session?.user && session.user.email_confirmed_at) {
             await fetchUserProfile(session.user.id);
           } else {
+            clearTimeout(timeoutId);
             setLoading(false);
           }
         }
       } catch (error) {
-        console.error('Error initializing auth:', error);
+        console.error('❌ Error initializing auth:', error);
         if (mounted) {
+          clearTimeout(timeoutId);
           setLoading(false);
         }
       }
@@ -68,7 +84,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session?.user?.email, 'confirmed:', session?.user?.email_confirmed_at);
+      console.log('🔄 Auth state changed:', {
+        event,
+        hasUser: !!session?.user,
+        email: session?.user?.email,
+        confirmed: !!session?.user?.email_confirmed_at
+      });
       
       if (!mounted) return;
 
@@ -84,13 +105,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return () => {
       mounted = false;
+      if (timeoutId) clearTimeout(timeoutId);
       subscription.unsubscribe();
     };
   }, []);
 
   const fetchUserProfile = async (userId: string) => {
     try {
-      console.log('Fetching profile for user:', userId);
+      console.log('👤 Fetching profile for user:', userId);
       
       const { data, error } = await supabase
         .from('users')
@@ -99,17 +121,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .maybeSingle();
 
       if (error) {
-        console.error('Error fetching user profile:', error);
+        console.error('❌ Error fetching user profile:', error);
         setLoading(false);
         return;
       }
 
       if (data) {
-        console.log('Profile found:', data);
+        console.log('✅ Profile found:', { name: data.name, role: data.role });
         setUserProfile(data);
         setLoading(false);
       } else {
-        console.log('No profile found, waiting for trigger...');
+        console.log('⏳ No profile found, waiting for creation...');
         // Wait a bit for the trigger to create the profile
         setTimeout(async () => {
           const { data: retryData, error: retryError } = await supabase
@@ -119,23 +141,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             .maybeSingle();
 
           if (retryData) {
-            console.log('Profile found on retry:', retryData);
+            console.log('✅ Profile found on retry:', { name: retryData.name, role: retryData.role });
             setUserProfile(retryData);
           } else {
-            console.log('Still no profile found');
+            console.log('❌ Still no profile found after retry');
           }
           setLoading(false);
         }, 2000);
       }
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      console.error('❌ Error fetching user profile:', error);
       setLoading(false);
     }
   };
 
   const signUp = async (email: string, password: string, userData: Omit<User, 'id' | 'created_at'>) => {
     try {
-      console.log('Signing up user:', email);
+      console.log('📝 Signing up user:', email);
       
       // Sign up the user with Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -154,37 +176,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (authError) {
-        console.error('Auth signup error:', authError);
+        console.error('❌ Auth signup error:', authError);
         return { error: authError };
       }
 
-      console.log('Signup result:', authData);
+      console.log('✅ Signup result:', {
+        hasUser: !!authData.user,
+        hasSession: !!authData.session,
+        needsConfirmation: !!authData.user && !authData.session
+      });
 
       // Check if email confirmation is required
       if (authData.user && !authData.session) {
-        console.log('Email confirmation required');
+        console.log('📧 Email confirmation required');
         return { 
           error: null, 
           needsConfirmation: true 
         };
       }
 
-      // If user is immediately confirmed, the trigger will create the profile
-      if (authData.user && authData.session) {
-        console.log('User immediately confirmed');
-        // The trigger should handle profile creation
-      }
-
       return { error: null };
     } catch (error) {
-      console.error('Signup error:', error);
+      console.error('❌ Signup error:', error);
       return { error };
     }
   };
 
   const signIn = async (identifier: string, password: string) => {
     try {
-      console.log('Attempting login with:', identifier);
+      console.log('🔐 Attempting login with:', identifier);
       
       // Try to sign in with email first
       let { data, error } = await supabase.auth.signInWithPassword({
@@ -194,7 +214,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // If email login fails, try to find user by university_id and use their email
       if (error && error.message.includes('Invalid login credentials')) {
-        console.log('Email login failed, trying university ID lookup');
+        console.log('🔍 Email login failed, trying university ID lookup');
         try {
           const { data: emailData, error: emailError } = await supabase
             .rpc('get_user_email_by_university_id', { 
@@ -202,7 +222,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             });
 
           if (!emailError && emailData) {
-            console.log('Found email for university ID:', emailData);
+            console.log('✅ Found email for university ID');
             const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
               email: emailData,
               password,
@@ -211,24 +231,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             error = authError;
           }
         } catch (fallbackError) {
-          console.error('University ID lookup error:', fallbackError);
+          console.error('❌ University ID lookup error:', fallbackError);
         }
       }
 
       if (error) {
-        console.error('Login error:', error);
+        console.error('❌ Login error:', error);
       } else {
-        console.log('Login successful:', data?.user?.email);
+        console.log('✅ Login successful:', data?.user?.email);
       }
 
       return { error };
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('❌ Login error:', error);
       return { error };
     }
   };
 
   const signOut = async () => {
+    console.log('🚪 Signing out...');
     await supabase.auth.signOut();
     setUser(null);
     setUserProfile(null);

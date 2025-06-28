@@ -3,21 +3,31 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+console.log('🔧 Supabase Configuration Check:');
+console.log('URL:', supabaseUrl ? '✅ Set' : '❌ Missing');
+console.log('Anon Key:', supabaseAnonKey ? '✅ Set' : '❌ Missing');
+
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Missing Supabase environment variables');
-  console.log('VITE_SUPABASE_URL:', supabaseUrl ? 'Set' : 'Missing');
-  console.log('VITE_SUPABASE_ANON_KEY:', supabaseAnonKey ? 'Set' : 'Missing');
+  console.error('❌ Missing Supabase environment variables');
+  console.error('Please check your .env file contains:');
+  console.error('VITE_SUPABASE_URL=your_supabase_url');
+  console.error('VITE_SUPABASE_ANON_KEY=your_supabase_anon_key');
 }
 
-export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '');
+export const supabase = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co', 
+  supabaseAnonKey || 'placeholder-key'
+);
 
 // Test the connection
 supabase.auth.getSession().then(({ data, error }) => {
   if (error) {
-    console.error('Supabase connection error:', error);
+    console.error('❌ Supabase connection error:', error);
   } else {
-    console.log('Supabase connected successfully');
+    console.log('✅ Supabase connected successfully');
   }
+}).catch((error) => {
+  console.error('❌ Supabase connection failed:', error);
 });
 
 // Database types
