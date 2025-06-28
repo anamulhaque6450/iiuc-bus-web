@@ -30,6 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session:', session?.user?.email, 'confirmed:', session?.user?.email_confirmed_at);
       setUser(session?.user ?? null);
       if (session?.user && session.user.email_confirmed_at) {
         fetchUserProfile(session.user.id);
@@ -40,7 +41,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session?.user?.email);
+      console.log('Auth state changed:', event, session?.user?.email, 'confirmed:', session?.user?.email_confirmed_at);
       setUser(session?.user ?? null);
       
       if (session?.user && session.user.email_confirmed_at) {
@@ -56,17 +57,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUserProfile = async (userId: string) => {
     try {
-      // Use a simple query without RLS complications
+      console.log('Fetching profile for user:', userId);
+      
+      // Wait a moment for the trigger to create the profile
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       const { data, error } = await supabase
         .from('users')
         .select('*')
         .eq('id', userId)
-        .maybeSingle(); // Use maybeSingle to avoid errors if no profile exists
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching user profile:', error);
       } else if (data) {
+        console.log('Profile found:', data);
         setUserProfile(data);
+      } else {
+        console.log('No profile found, will retry...');
+        // Retry after a short delay
+        setTimeout(() => fetchUserProfile(userId), 2000);
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);
@@ -79,7 +89,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setLoading(true);
       
-      // First, sign up the user with Supabase Auth
+      console.log('Signing up user:', email);
+      
+      // Sign up the user with Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
@@ -96,37 +108,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (authError) {
+        console.error('Auth signup error:', authError);
         return { error: authError };
       }
 
+      console.log('Signup result:', authData);
+
       // Check if email confirmation is required
       if (authData.user && !authData.session) {
+        console.log('Email confirmation required');
         return { 
           error: null, 
           needsConfirmation: true 
         };
       }
 
-      // If user is immediately confirmed, create profile
+      // If user is immediately confirmed, the trigger will create the profile
       if (authData.user && authData.session) {
-        try {
-          const { error: profileError } = await supabase
-            .from('users')
-            .insert([
-              {
-                id: authData.user.id,
-                email: authData.user.email!,
-                ...userData,
-              },
-            ]);
-
-          if (profileError) {
-            console.error('Profile creation error:', profileError);
-            // Don't return error here as auth was successful
-          }
-        } catch (profileError) {
-          console.error('Profile creation error:', profileError);
-        }
+        console.log('User immediately confirmed');
+        // The trigger should handle profile creation
       }
 
       return { error: null };
@@ -142,6 +142,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setLoading(true);
       
+      console.log('Attempting login with:', identifier);
+      
       // Try to sign in with email first
       let { data, error } = await supabase.auth.signInWithPassword({
         email: identifier,
@@ -150,24 +152,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // If email login fails, try to find user by university_id and use their email
       if (error && error.message.includes('Invalid login credentials')) {
+        console.log('Email login failed, trying university ID lookup');
         try {
-          // Use a direct query to avoid RLS issues
-          const { data: userData, error: userError } = await supabase
+          const { data: emailData, error: emailError } = await supabase
             .rpc('get_user_email_by_university_id', { 
               university_id_param: identifier 
             });
 
-          if (!userError && userData) {
+          if (!emailError && emailData) {
+            console.log('Found email for university ID:', emailData);
             const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-              email: userData,
+              email: emailData,
               password,
             });
             data = authData;
             error = authError;
           }
         } catch (fallbackError) {
-          console.error('Fallback login error:', fallbackError);
+          console.error('University ID lookup error:', fallbackError);
         }
+      }
+
+      if (error) {
+        console.error('Login error:', error);
+      } else {
+        console.log('Login successful:', data?.user?.email);
       }
 
       return { error };
