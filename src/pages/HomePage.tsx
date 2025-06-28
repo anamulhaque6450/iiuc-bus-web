@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Navbar from '../components/Navbar';
 import Header from '../components/Header';
 import SearchFilters from '../components/SearchFilters';
@@ -6,14 +6,10 @@ import ResultsSection from '../components/ResultsSection';
 import Footer from '../components/Footer';
 import ScrollToTop from '../components/ScrollToTop';
 import AIAssistant from '../components/AIAssistant';
-import AuthTest from '../components/AuthTest';
 import { busSchedules } from '../data/busSchedules';
 import { useSearch } from '../hooks/useSearch';
-import { Settings } from 'lucide-react';
 
 const HomePage: React.FC = () => {
-  const [showAuthTest, setShowAuthTest] = useState(false);
-  
   const {
     searchTerm,
     setSearchTerm,
@@ -75,18 +71,6 @@ const HomePage: React.FC = () => {
       {/* Floating Components */}
       <ScrollToTop />
       <AIAssistant schedules={busSchedules} />
-      
-      {/* Database Test Button - Development Only */}
-      <button
-        onClick={() => setShowAuthTest(true)}
-        className="fixed bottom-6 right-20 bg-purple-500 hover:bg-purple-600 text-white p-3 rounded-full shadow-lg transition-colors z-40"
-        title="Test Database Connection"
-      >
-        <Settings className="h-5 w-5" />
-      </button>
-
-      {/* Auth Test Modal */}
-      {showAuthTest && <AuthTest />}
     </div>
   );
 };
