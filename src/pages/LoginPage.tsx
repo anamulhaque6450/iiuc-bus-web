@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Bus, Lock, User, Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
+import { Bus, Lock, User, Eye, EyeOff, AlertCircle, Loader2, Mail } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
   const { signIn, user, userProfile, loading } = useAuth();
@@ -90,9 +90,20 @@ const LoginPage: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Error Message */}
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center space-x-3">
-                <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
-                <p className="text-red-700 text-sm">{error}</p>
+              <div className="space-y-3">
+                <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center space-x-3">
+                  <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+                  <p className="text-red-700 text-sm">{error}</p>
+                </div>
+                
+                {/* Email verification reminder */}
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start space-x-3">
+                  <Mail className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                  <div className="text-sm text-blue-700">
+                    <p className="font-medium mb-1">Recently signed up?</p>
+                    <p>Check your email for a verification link. You must verify your email address before you can log in.</p>
+                  </div>
+                </div>
               </div>
             )}
 
