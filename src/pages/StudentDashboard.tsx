@@ -672,36 +672,149 @@ const StudentDashboard: React.FC = () => {
               </form>
             </div>
 
-            {/* Quick Actions */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
-              <h3 className="font-bold text-gray-900 mb-4">Quick Actions</h3>
+            {/* Enhanced Quick Actions - Fully Responsive */}
+            <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border border-gray-200">
+              <h3 className="font-bold text-gray-900 mb-4 flex items-center space-x-2">
+                <Star className="h-5 w-5 text-yellow-500" />
+                <span>Quick Actions</span>
+              </h3>
               
-              <div className="space-y-3">
+              {/* Mobile-First Grid Layout */}
+              <div className="grid grid-cols-1 gap-3">
+                
+                {/* View Today's Schedule */}
                 <button 
                   onClick={() => setActiveTab('schedules')}
-                  className="w-full flex items-center space-x-3 px-4 py-3 bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-colors"
+                  className="group w-full flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 text-blue-700 rounded-xl transition-all duration-200 border border-blue-200 hover:border-blue-300 hover:shadow-md"
                 >
-                  <Clock className="h-4 w-4" />
-                  <span>View Today's Schedule</span>
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-blue-500 rounded-lg p-2 group-hover:scale-110 transition-transform">
+                      <Clock className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <span className="font-semibold text-sm sm:text-base">View Today's Schedule</span>
+                      <p className="text-xs text-blue-600 mt-0.5">Check current bus timings</p>
+                    </div>
+                  </div>
+                  <div className="text-blue-500 group-hover:translate-x-1 transition-transform">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
                 </button>
+
+                {/* Friday Special */}
                 <button 
                   onClick={() => setActiveTab('schedules')}
-                  className="w-full flex items-center space-x-3 px-4 py-3 bg-purple-50 text-purple-700 rounded-xl hover:bg-purple-100 transition-colors"
+                  className="group w-full flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 text-purple-700 rounded-xl transition-all duration-200 border border-purple-200 hover:border-purple-300 hover:shadow-md"
                 >
-                  <Calendar className="h-4 w-4" />
-                  <span>Friday Special</span>
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-purple-500 rounded-lg p-2 group-hover:scale-110 transition-transform">
+                      <Calendar className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <span className="font-semibold text-sm sm:text-base">Friday Special</span>
+                      <p className="text-xs text-purple-600 mt-0.5">AC buses & special timings</p>
+                    </div>
+                  </div>
+                  <div className="text-purple-500 group-hover:translate-x-1 transition-transform">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
                 </button>
+
+                {/* File Complaint */}
                 <button 
                   onClick={() => setShowComplaintForm(true)}
-                  className="w-full flex items-center space-x-3 px-4 py-3 bg-red-50 text-red-700 rounded-xl hover:bg-red-100 transition-colors"
+                  className="group w-full flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 text-red-700 rounded-xl transition-all duration-200 border border-red-200 hover:border-red-300 hover:shadow-md"
                 >
-                  <AlertTriangle className="h-4 w-4" />
-                  <span>File Complaint</span>
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-red-500 rounded-lg p-2 group-hover:scale-110 transition-transform">
+                      <AlertTriangle className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <span className="font-semibold text-sm sm:text-base">File Complaint</span>
+                      <p className="text-xs text-red-600 mt-0.5">Report issues or concerns</p>
+                    </div>
+                  </div>
+                  <div className="text-red-500 group-hover:translate-x-1 transition-transform">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
                 </button>
-                <button className="w-full flex items-center space-x-3 px-4 py-3 bg-emerald-50 text-emerald-700 rounded-xl hover:bg-emerald-100 transition-colors">
-                  <Navigation className="h-4 w-4" />
-                  <span>Track My Bus</span>
+
+                {/* Track My Bus */}
+                <button className="group w-full flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-emerald-50 to-emerald-100 hover:from-emerald-100 hover:to-emerald-200 text-emerald-700 rounded-xl transition-all duration-200 border border-emerald-200 hover:border-emerald-300 hover:shadow-md">
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-emerald-500 rounded-lg p-2 group-hover:scale-110 transition-transform">
+                      <Navigation className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <span className="font-semibold text-sm sm:text-base">Track My Bus</span>
+                      <p className="text-xs text-emerald-600 mt-0.5">Real-time bus location</p>
+                    </div>
+                  </div>
+                  <div className="text-emerald-500 group-hover:translate-x-1 transition-transform">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
                 </button>
+
+                {/* My Complaints - Quick Access */}
+                <button 
+                  onClick={() => setActiveTab('complaints')}
+                  className="group w-full flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 text-orange-700 rounded-xl transition-all duration-200 border border-orange-200 hover:border-orange-300 hover:shadow-md"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-orange-500 rounded-lg p-2 group-hover:scale-110 transition-transform">
+                      <FileText className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <span className="font-semibold text-sm sm:text-base">My Complaints</span>
+                      <p className="text-xs text-orange-600 mt-0.5">{complaints.length} active complaints</p>
+                    </div>
+                  </div>
+                  <div className="text-orange-500 group-hover:translate-x-1 transition-transform">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </button>
+
+                {/* Route Information */}
+                <button className="group w-full flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-indigo-50 to-indigo-100 hover:from-indigo-100 hover:to-indigo-200 text-indigo-700 rounded-xl transition-all duration-200 border border-indigo-200 hover:border-indigo-300 hover:shadow-md">
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-indigo-500 rounded-lg p-2 group-hover:scale-110 transition-transform">
+                      <Route className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <span className="font-semibold text-sm sm:text-base">Route Information</span>
+                      <p className="text-xs text-indigo-600 mt-0.5">Detailed route maps</p>
+                    </div>
+                  </div>
+                  <div className="text-indigo-500 group-hover:translate-x-1 transition-transform">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </button>
+              </div>
+
+              {/* Quick Stats at Bottom */}
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <div className="grid grid-cols-2 gap-3 text-center">
+                  <div className="bg-gray-50 rounded-lg p-2">
+                    <div className="text-lg font-bold text-gray-900">{morningSchedules.length}</div>
+                    <div className="text-xs text-gray-600">Morning Buses</div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-2">
+                    <div className="text-lg font-bold text-gray-900">{returnSchedules.length}</div>
+                    <div className="text-xs text-gray-600">Return Buses</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
