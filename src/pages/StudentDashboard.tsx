@@ -3,7 +3,8 @@ import { useAuth } from '../context/AuthContext';
 import { supabase, BusScheduleDB, Feedback, Complaint } from '../lib/supabase';
 import { 
   Bus, User, MessageSquare, Send, Clock, MapPin, Route, Calendar, LogOut, Loader2, 
-  Star, Navigation, AlertTriangle, CheckCircle, FileText, Plus, Filter, Eye
+  Star, Navigation, AlertTriangle, CheckCircle, FileText, Plus, Filter, Eye, Search,
+  ArrowRight, TrendingUp, BarChart3
 } from 'lucide-react';
 import BusCard from '../components/BusCard';
 import { BusSchedule } from '../types/BusSchedule';
@@ -18,6 +19,9 @@ const StudentDashboard: React.FC = () => {
   const [feedbackSuccess, setFeedbackSuccess] = useState(false);
   const [activeTab, setActiveTab] = useState<'schedules' | 'complaints'>('schedules');
   const [showComplaintForm, setShowComplaintForm] = useState(false);
+  const [showRouteInfo, setShowRouteInfo] = useState(false);
+  const [showTrackingModal, setShowTrackingModal] = useState(false);
+  const [scheduleFilter, setScheduleFilter] = useState<'all' | 'today' | 'friday'>('all');
   const [complaintForm, setComplaintForm] = useState({
     title: '',
     description: '',
@@ -165,6 +169,22 @@ const StudentDashboard: React.FC = () => {
     await signOut();
   };
 
+  // Filter schedules based on current filter
+  const getFilteredSchedules = () => {
+    switch (scheduleFilter) {
+      case 'today':
+        const currentHour = new Date().getHours();
+        return schedules.filter(s => {
+          const scheduleHour = parseInt(s.time.split(':')[0]);
+          return scheduleHour >= currentHour;
+        });
+      case 'friday':
+        return schedules.filter(s => s.scheduleType === 'Friday');
+      default:
+        return schedules;
+    }
+  };
+
   // Get morning schedules for quick stats
   const morningSchedules = schedules.filter(s => {
     const hour = parseInt(s.time.split(':')[0]);
@@ -175,6 +195,33 @@ const StudentDashboard: React.FC = () => {
   const returnSchedules = schedules.filter(s => 
     s.direction === 'IIUCToCity' || s.direction === 'FromUniversity'
   );
+
+  // Quick Action Handlers
+  const handleViewTodaySchedule = () => {
+    setScheduleFilter('today');
+    setActiveTab('schedules');
+  };
+
+  const handleViewFridaySpecial = () => {
+    setScheduleFilter('friday');
+    setActiveTab('schedules');
+  };
+
+  const handleFileComplaint = () => {
+    setShowComplaintForm(true);
+  };
+
+  const handleTrackBus = () => {
+    setShowTrackingModal(true);
+  };
+
+  const handleViewComplaints = () => {
+    setActiveTab('complaints');
+  };
+
+  const handleViewRouteInfo = () => {
+    setShowRouteInfo(true);
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -317,7 +364,7 @@ const StudentDashboard: React.FC = () => {
                   <Bus className="h-5 w-5" />
                   <span>Bus Schedules</span>
                   <span className="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                    {schedules.length}
+                    {getFilteredSchedules().length}
                   </span>
                 </button>
                 <button
@@ -340,16 +387,32 @@ const StudentDashboard: React.FC = () => {
                 {/* Bus Schedules Tab */}
                 {activeTab === 'schedules' && (
                   <div>
-                    <div className="flex items-center space-x-3 mb-6">
-                      <Bus className="h-6 w-6 text-blue-600" />
-                      <h3 className="text-xl font-bold text-gray-900">
-                        Your Bus Schedules ({userProfile?.gender})
-                      </h3>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 space-y-4 sm:space-y-0">
+                      <div className="flex items-center space-x-3">
+                        <Bus className="h-6 w-6 text-blue-600" />
+                        <h3 className="text-xl font-bold text-gray-900">
+                          Your Bus Schedules ({userProfile?.gender})
+                        </h3>
+                      </div>
+                      
+                      {/* Schedule Filter */}
+                      <div className="flex items-center space-x-2">
+                        <Filter className="h-4 w-4 text-gray-500" />
+                        <select
+                          value={scheduleFilter}
+                          onChange={(e) => setScheduleFilter(e.target.value as any)}
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                        >
+                          <option value="all">All Schedules</option>
+                          <option value="today">Today's Remaining</option>
+                          <option value="friday">Friday Special</option>
+                        </select>
+                      </div>
                     </div>
                     
-                    {schedules.length > 0 ? (
+                    {getFilteredSchedules().length > 0 ? (
                       <div className="grid grid-cols-1 gap-6">
-                        {schedules.map((schedule) => (
+                        {getFilteredSchedules().map((schedule) => (
                           <BusCard key={schedule.id} schedule={schedule} />
                         ))}
                       </div>
@@ -357,7 +420,14 @@ const StudentDashboard: React.FC = () => {
                       <div className="text-center py-12">
                         <Bus className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                         <h4 className="text-lg font-semibold text-gray-600 mb-2">No schedules available</h4>
-                        <p className="text-gray-500">Bus schedules for {userProfile?.gender} students will appear here.</p>
+                        <p className="text-gray-500">
+                          {scheduleFilter === 'today' 
+                            ? 'No more buses scheduled for today.' 
+                            : scheduleFilter === 'friday'
+                            ? 'No Friday special schedules available.'
+                            : `Bus schedules for ${userProfile?.gender} students will appear here.`
+                          }
+                        </p>
                       </div>
                     )}
                   </div>
@@ -379,143 +449,6 @@ const StudentDashboard: React.FC = () => {
                         <span>File Complaint</span>
                       </button>
                     </div>
-
-                    {/* Complaint Form Modal */}
-                    {showComplaintForm && (
-                      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                        <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-md max-h-[90vh] overflow-y-auto">
-                          <div className="p-6">
-                            <div className="flex items-center justify-between mb-6">
-                              <h4 className="text-xl font-bold text-gray-900">File a Complaint</h4>
-                              <button
-                                onClick={() => setShowComplaintForm(false)}
-                                className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
-                              >
-                                ✕
-                              </button>
-                            </div>
-
-                            <form onSubmit={handleComplaintSubmit} className="space-y-4">
-                              <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                  Complaint Title *
-                                </label>
-                                <input
-                                  type="text"
-                                  value={complaintForm.title}
-                                  onChange={(e) => setComplaintForm({...complaintForm, title: e.target.value})}
-                                  placeholder="Brief description of the issue"
-                                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200"
-                                  required
-                                />
-                              </div>
-
-                              <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                  Category *
-                                </label>
-                                <select
-                                  value={complaintForm.category}
-                                  onChange={(e) => setComplaintForm({...complaintForm, category: e.target.value as any})}
-                                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200"
-                                  required
-                                >
-                                  <option value="delay">Bus Delay</option>
-                                  <option value="safety">Safety Concern</option>
-                                  <option value="driver_behavior">Driver Behavior</option>
-                                  <option value="bus_condition">Bus Condition</option>
-                                  <option value="route_issue">Route Issue</option>
-                                  <option value="other">Other</option>
-                                </select>
-                              </div>
-
-                              <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                  Priority
-                                </label>
-                                <select
-                                  value={complaintForm.priority}
-                                  onChange={(e) => setComplaintForm({...complaintForm, priority: e.target.value as any})}
-                                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200"
-                                >
-                                  <option value="low">Low</option>
-                                  <option value="medium">Medium</option>
-                                  <option value="high">High</option>
-                                  <option value="urgent">Urgent</option>
-                                </select>
-                              </div>
-
-                              <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                  Bus Route (Optional)
-                                </label>
-                                <input
-                                  type="text"
-                                  value={complaintForm.bus_route}
-                                  onChange={(e) => setComplaintForm({...complaintForm, bus_route: e.target.value})}
-                                  placeholder="e.g., BOT to IIUC, 7:00 AM"
-                                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200"
-                                />
-                              </div>
-
-                              <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                  Incident Time (Optional)
-                                </label>
-                                <input
-                                  type="text"
-                                  value={complaintForm.incident_time}
-                                  onChange={(e) => setComplaintForm({...complaintForm, incident_time: e.target.value})}
-                                  placeholder="e.g., Today 7:30 AM, Yesterday evening"
-                                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200"
-                                />
-                              </div>
-
-                              <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                  Detailed Description *
-                                </label>
-                                <textarea
-                                  value={complaintForm.description}
-                                  onChange={(e) => setComplaintForm({...complaintForm, description: e.target.value})}
-                                  placeholder="Please provide detailed information about the issue..."
-                                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200 resize-none"
-                                  rows={4}
-                                  required
-                                />
-                              </div>
-
-                              <div className="flex space-x-3 pt-4">
-                                <button
-                                  type="button"
-                                  onClick={() => setShowComplaintForm(false)}
-                                  className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-semibold"
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  type="submit"
-                                  disabled={submittingComplaint}
-                                  className="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:cursor-not-allowed flex items-center justify-center space-x-2"
-                                >
-                                  {submittingComplaint ? (
-                                    <>
-                                      <Loader2 className="h-4 w-4 animate-spin" />
-                                      <span>Submitting...</span>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Send className="h-4 w-4" />
-                                      <span>Submit Complaint</span>
-                                    </>
-                                  )}
-                                </button>
-                              </div>
-                            </form>
-                          </div>
-                        </div>
-                      </div>
-                    )}
 
                     {/* Complaints List */}
                     {complaints.length > 0 ? (
@@ -594,6 +527,146 @@ const StudentDashboard: React.FC = () => {
           {/* Sidebar */}
           <div className="space-y-6">
             
+            {/* Enhanced Quick Actions - Fully Responsive and Working */}
+            <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border border-gray-200">
+              <h3 className="font-bold text-gray-900 mb-4 flex items-center space-x-2">
+                <Star className="h-5 w-5 text-yellow-500" />
+                <span>Quick Actions</span>
+              </h3>
+              
+              {/* Mobile-First Grid Layout */}
+              <div className="grid grid-cols-1 gap-3">
+                
+                {/* View Today's Schedule - WORKING */}
+                <button 
+                  onClick={handleViewTodaySchedule}
+                  className="group w-full flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 text-blue-700 rounded-xl transition-all duration-200 border border-blue-200 hover:border-blue-300 hover:shadow-md"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-blue-500 rounded-lg p-2 group-hover:scale-110 transition-transform">
+                      <Clock className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <span className="font-semibold text-sm sm:text-base">View Today's Schedule</span>
+                      <p className="text-xs text-blue-600 mt-0.5">Check current bus timings</p>
+                    </div>
+                  </div>
+                  <div className="text-blue-500 group-hover:translate-x-1 transition-transform">
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
+                </button>
+
+                {/* Friday Special - WORKING */}
+                <button 
+                  onClick={handleViewFridaySpecial}
+                  className="group w-full flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 text-purple-700 rounded-xl transition-all duration-200 border border-purple-200 hover:border-purple-300 hover:shadow-md"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-purple-500 rounded-lg p-2 group-hover:scale-110 transition-transform">
+                      <Calendar className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <span className="font-semibold text-sm sm:text-base">Friday Special</span>
+                      <p className="text-xs text-purple-600 mt-0.5">AC buses & special timings</p>
+                    </div>
+                  </div>
+                  <div className="text-purple-500 group-hover:translate-x-1 transition-transform">
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
+                </button>
+
+                {/* File Complaint - WORKING */}
+                <button 
+                  onClick={handleFileComplaint}
+                  className="group w-full flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 text-red-700 rounded-xl transition-all duration-200 border border-red-200 hover:border-red-300 hover:shadow-md"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-red-500 rounded-lg p-2 group-hover:scale-110 transition-transform">
+                      <AlertTriangle className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <span className="font-semibold text-sm sm:text-base">File Complaint</span>
+                      <p className="text-xs text-red-600 mt-0.5">Report issues or concerns</p>
+                    </div>
+                  </div>
+                  <div className="text-red-500 group-hover:translate-x-1 transition-transform">
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
+                </button>
+
+                {/* Track My Bus - WORKING */}
+                <button 
+                  onClick={handleTrackBus}
+                  className="group w-full flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-emerald-50 to-emerald-100 hover:from-emerald-100 hover:to-emerald-200 text-emerald-700 rounded-xl transition-all duration-200 border border-emerald-200 hover:border-emerald-300 hover:shadow-md"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-emerald-500 rounded-lg p-2 group-hover:scale-110 transition-transform">
+                      <Navigation className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <span className="font-semibold text-sm sm:text-base">Track My Bus</span>
+                      <p className="text-xs text-emerald-600 mt-0.5">Real-time bus location</p>
+                    </div>
+                  </div>
+                  <div className="text-emerald-500 group-hover:translate-x-1 transition-transform">
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
+                </button>
+
+                {/* My Complaints - WORKING */}
+                <button 
+                  onClick={handleViewComplaints}
+                  className="group w-full flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 text-orange-700 rounded-xl transition-all duration-200 border border-orange-200 hover:border-orange-300 hover:shadow-md"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-orange-500 rounded-lg p-2 group-hover:scale-110 transition-transform">
+                      <FileText className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <span className="font-semibold text-sm sm:text-base">My Complaints</span>
+                      <p className="text-xs text-orange-600 mt-0.5">{complaints.length} active complaints</p>
+                    </div>
+                  </div>
+                  <div className="text-orange-500 group-hover:translate-x-1 transition-transform">
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
+                </button>
+
+                {/* Route Information - WORKING */}
+                <button 
+                  onClick={handleViewRouteInfo}
+                  className="group w-full flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-indigo-50 to-indigo-100 hover:from-indigo-100 hover:to-indigo-200 text-indigo-700 rounded-xl transition-all duration-200 border border-indigo-200 hover:border-indigo-300 hover:shadow-md"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-indigo-500 rounded-lg p-2 group-hover:scale-110 transition-transform">
+                      <Route className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <span className="font-semibold text-sm sm:text-base">Route Information</span>
+                      <p className="text-xs text-indigo-600 mt-0.5">Detailed route maps</p>
+                    </div>
+                  </div>
+                  <div className="text-indigo-500 group-hover:translate-x-1 transition-transform">
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
+                </button>
+              </div>
+
+              {/* Quick Stats at Bottom */}
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <div className="grid grid-cols-2 gap-3 text-center">
+                  <div className="bg-gray-50 rounded-lg p-2">
+                    <div className="text-lg font-bold text-gray-900">{morningSchedules.length}</div>
+                    <div className="text-xs text-gray-600">Morning Buses</div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-2">
+                    <div className="text-lg font-bold text-gray-900">{returnSchedules.length}</div>
+                    <div className="text-xs text-gray-600">Return Buses</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Profile Card */}
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
               <div className="flex items-center space-x-3 mb-4">
@@ -671,155 +744,275 @@ const StudentDashboard: React.FC = () => {
                 </button>
               </form>
             </div>
+          </div>
+        </div>
+      </div>
 
-            {/* Enhanced Quick Actions - Fully Responsive */}
-            <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border border-gray-200">
-              <h3 className="font-bold text-gray-900 mb-4 flex items-center space-x-2">
-                <Star className="h-5 w-5 text-yellow-500" />
-                <span>Quick Actions</span>
-              </h3>
-              
-              {/* Mobile-First Grid Layout */}
-              <div className="grid grid-cols-1 gap-3">
-                
-                {/* View Today's Schedule */}
-                <button 
-                  onClick={() => setActiveTab('schedules')}
-                  className="group w-full flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 text-blue-700 rounded-xl transition-all duration-200 border border-blue-200 hover:border-blue-300 hover:shadow-md"
+      {/* Modals */}
+      
+      {/* Complaint Form Modal */}
+      {showComplaintForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h4 className="text-xl font-bold text-gray-900">File a Complaint</h4>
+                <button
+                  onClick={() => setShowComplaintForm(false)}
+                  className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
                 >
-                  <div className="flex items-center space-x-3">
-                    <div className="bg-blue-500 rounded-lg p-2 group-hover:scale-110 transition-transform">
-                      <Clock className="h-4 w-4 text-white" />
-                    </div>
-                    <div className="text-left">
-                      <span className="font-semibold text-sm sm:text-base">View Today's Schedule</span>
-                      <p className="text-xs text-blue-600 mt-0.5">Check current bus timings</p>
-                    </div>
-                  </div>
-                  <div className="text-blue-500 group-hover:translate-x-1 transition-transform">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </button>
-
-                {/* Friday Special */}
-                <button 
-                  onClick={() => setActiveTab('schedules')}
-                  className="group w-full flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 text-purple-700 rounded-xl transition-all duration-200 border border-purple-200 hover:border-purple-300 hover:shadow-md"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="bg-purple-500 rounded-lg p-2 group-hover:scale-110 transition-transform">
-                      <Calendar className="h-4 w-4 text-white" />
-                    </div>
-                    <div className="text-left">
-                      <span className="font-semibold text-sm sm:text-base">Friday Special</span>
-                      <p className="text-xs text-purple-600 mt-0.5">AC buses & special timings</p>
-                    </div>
-                  </div>
-                  <div className="text-purple-500 group-hover:translate-x-1 transition-transform">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </button>
-
-                {/* File Complaint */}
-                <button 
-                  onClick={() => setShowComplaintForm(true)}
-                  className="group w-full flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 text-red-700 rounded-xl transition-all duration-200 border border-red-200 hover:border-red-300 hover:shadow-md"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="bg-red-500 rounded-lg p-2 group-hover:scale-110 transition-transform">
-                      <AlertTriangle className="h-4 w-4 text-white" />
-                    </div>
-                    <div className="text-left">
-                      <span className="font-semibold text-sm sm:text-base">File Complaint</span>
-                      <p className="text-xs text-red-600 mt-0.5">Report issues or concerns</p>
-                    </div>
-                  </div>
-                  <div className="text-red-500 group-hover:translate-x-1 transition-transform">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </button>
-
-                {/* Track My Bus */}
-                <button className="group w-full flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-emerald-50 to-emerald-100 hover:from-emerald-100 hover:to-emerald-200 text-emerald-700 rounded-xl transition-all duration-200 border border-emerald-200 hover:border-emerald-300 hover:shadow-md">
-                  <div className="flex items-center space-x-3">
-                    <div className="bg-emerald-500 rounded-lg p-2 group-hover:scale-110 transition-transform">
-                      <Navigation className="h-4 w-4 text-white" />
-                    </div>
-                    <div className="text-left">
-                      <span className="font-semibold text-sm sm:text-base">Track My Bus</span>
-                      <p className="text-xs text-emerald-600 mt-0.5">Real-time bus location</p>
-                    </div>
-                  </div>
-                  <div className="text-emerald-500 group-hover:translate-x-1 transition-transform">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </button>
-
-                {/* My Complaints - Quick Access */}
-                <button 
-                  onClick={() => setActiveTab('complaints')}
-                  className="group w-full flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 text-orange-700 rounded-xl transition-all duration-200 border border-orange-200 hover:border-orange-300 hover:shadow-md"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="bg-orange-500 rounded-lg p-2 group-hover:scale-110 transition-transform">
-                      <FileText className="h-4 w-4 text-white" />
-                    </div>
-                    <div className="text-left">
-                      <span className="font-semibold text-sm sm:text-base">My Complaints</span>
-                      <p className="text-xs text-orange-600 mt-0.5">{complaints.length} active complaints</p>
-                    </div>
-                  </div>
-                  <div className="text-orange-500 group-hover:translate-x-1 transition-transform">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </button>
-
-                {/* Route Information */}
-                <button className="group w-full flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-indigo-50 to-indigo-100 hover:from-indigo-100 hover:to-indigo-200 text-indigo-700 rounded-xl transition-all duration-200 border border-indigo-200 hover:border-indigo-300 hover:shadow-md">
-                  <div className="flex items-center space-x-3">
-                    <div className="bg-indigo-500 rounded-lg p-2 group-hover:scale-110 transition-transform">
-                      <Route className="h-4 w-4 text-white" />
-                    </div>
-                    <div className="text-left">
-                      <span className="font-semibold text-sm sm:text-base">Route Information</span>
-                      <p className="text-xs text-indigo-600 mt-0.5">Detailed route maps</p>
-                    </div>
-                  </div>
-                  <div className="text-indigo-500 group-hover:translate-x-1 transition-transform">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
+                  ✕
                 </button>
               </div>
 
-              {/* Quick Stats at Bottom */}
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <div className="grid grid-cols-2 gap-3 text-center">
-                  <div className="bg-gray-50 rounded-lg p-2">
-                    <div className="text-lg font-bold text-gray-900">{morningSchedules.length}</div>
-                    <div className="text-xs text-gray-600">Morning Buses</div>
+              <form onSubmit={handleComplaintSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Complaint Title *
+                  </label>
+                  <input
+                    type="text"
+                    value={complaintForm.title}
+                    onChange={(e) => setComplaintForm({...complaintForm, title: e.target.value})}
+                    placeholder="Brief description of the issue"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Category *
+                  </label>
+                  <select
+                    value={complaintForm.category}
+                    onChange={(e) => setComplaintForm({...complaintForm, category: e.target.value as any})}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200"
+                    required
+                  >
+                    <option value="delay">Bus Delay</option>
+                    <option value="safety">Safety Concern</option>
+                    <option value="driver_behavior">Driver Behavior</option>
+                    <option value="bus_condition">Bus Condition</option>
+                    <option value="route_issue">Route Issue</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Priority
+                  </label>
+                  <select
+                    value={complaintForm.priority}
+                    onChange={(e) => setComplaintForm({...complaintForm, priority: e.target.value as any})}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200"
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                    <option value="urgent">Urgent</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Bus Route (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={complaintForm.bus_route}
+                    onChange={(e) => setComplaintForm({...complaintForm, bus_route: e.target.value})}
+                    placeholder="e.g., BOT to IIUC, 7:00 AM"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Incident Time (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={complaintForm.incident_time}
+                    onChange={(e) => setComplaintForm({...complaintForm, incident_time: e.target.value})}
+                    placeholder="e.g., Today 7:30 AM, Yesterday evening"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Detailed Description *
+                  </label>
+                  <textarea
+                    value={complaintForm.description}
+                    onChange={(e) => setComplaintForm({...complaintForm, description: e.target.value})}
+                    placeholder="Please provide detailed information about the issue..."
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200 resize-none"
+                    rows={4}
+                    required
+                  />
+                </div>
+
+                <div className="flex space-x-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowComplaintForm(false)}
+                    className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-semibold"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={submittingComplaint}
+                    className="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                  >
+                    {submittingComplaint ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span>Submitting...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="h-4 w-4" />
+                        <span>Submit Complaint</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bus Tracking Modal */}
+      {showTrackingModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-lg">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h4 className="text-xl font-bold text-gray-900">Track My Bus</h4>
+                <button
+                  onClick={() => setShowTrackingModal(false)}
+                  className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="text-center py-8">
+                <div className="bg-gradient-to-r from-emerald-100 to-green-100 rounded-full p-6 w-24 h-24 mx-auto mb-4 flex items-center justify-center">
+                  <Navigation className="h-12 w-12 text-emerald-600 animate-pulse" />
+                </div>
+                <h5 className="text-lg font-semibold text-gray-900 mb-2">Real-time Tracking</h5>
+                <p className="text-gray-600 mb-6">
+                  Bus tracking feature is coming soon! You'll be able to see live locations of all IIUC buses.
+                </p>
+                
+                <div className="bg-blue-50 rounded-xl p-4 mb-6">
+                  <h6 className="font-semibold text-blue-900 mb-2">Coming Features:</h6>
+                  <ul className="text-sm text-blue-700 space-y-1">
+                    <li>• Live bus locations on map</li>
+                    <li>• Estimated arrival times</li>
+                    <li>• Route progress tracking</li>
+                    <li>• Push notifications</li>
+                  </ul>
+                </div>
+
+                <button
+                  onClick={() => setShowTrackingModal(false)}
+                  className="px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors font-semibold"
+                >
+                  Got it!
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Route Information Modal */}
+      {showRouteInfo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h4 className="text-xl font-bold text-gray-900">Route Information</h4>
+                <button
+                  onClick={() => setShowRouteInfo(false)}
+                  className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-4">
+                  <h5 className="font-semibold text-indigo-900 mb-3 flex items-center space-x-2">
+                    <Route className="h-5 w-5" />
+                    <span>Major Routes</span>
+                  </h5>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-white rounded-lg p-3">
+                      <h6 className="font-medium text-gray-900 mb-2">BOT Route</h6>
+                      <p className="text-sm text-gray-600">BOT → Muradpur → 2 No Gate → Baizid Link → IIUC</p>
+                      <span className="text-xs text-blue-600 font-medium">~25 minutes</span>
+                    </div>
+                    <div className="bg-white rounded-lg p-3">
+                      <h6 className="font-medium text-gray-900 mb-2">Agrabad Route</h6>
+                      <p className="text-sm text-gray-600">Agrabad → Boropool → AK Khan → IIUC</p>
+                      <span className="text-xs text-blue-600 font-medium">~30 minutes</span>
+                    </div>
+                    <div className="bg-white rounded-lg p-3">
+                      <h6 className="font-medium text-gray-900 mb-2">Chatteswari Route</h6>
+                      <p className="text-sm text-gray-600">Chatteswari → GEC → Khulshi → AK Khan → IIUC</p>
+                      <span className="text-xs text-blue-600 font-medium">~35 minutes</span>
+                    </div>
+                    <div className="bg-white rounded-lg p-3">
+                      <h6 className="font-medium text-gray-900 mb-2">Baroyarhat Route</h6>
+                      <p className="text-sm text-gray-600">Baroyarhat → Mirshorai → Sitakunda → IIUC</p>
+                      <span className="text-xs text-blue-600 font-medium">~45 minutes</span>
+                    </div>
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-2">
-                    <div className="text-lg font-bold text-gray-900">{returnSchedules.length}</div>
-                    <div className="text-xs text-gray-600">Return Buses</div>
+                </div>
+
+                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4">
+                  <h5 className="font-semibold text-green-900 mb-3">Service Information</h5>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="font-medium text-gray-900">Regular Days:</span>
+                      <p className="text-gray-600">Saturday - Wednesday</p>
+                    </div>
+                    <div>
+                      <span className="font-medium text-gray-900">Service Hours:</span>
+                      <p className="text-gray-600">6:40 AM - 4:35 PM</p>
+                    </div>
+                    <div>
+                      <span className="font-medium text-gray-900">Friday Special:</span>
+                      <p className="text-gray-600">7:30 AM - 6:30 PM</p>
+                    </div>
+                    <div>
+                      <span className="font-medium text-gray-900">Total Routes:</span>
+                      <p className="text-gray-600">15+ Major Routes</p>
+                    </div>
                   </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => setShowRouteInfo(false)}
+                    className="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors font-semibold"
+                  >
+                    Close
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
