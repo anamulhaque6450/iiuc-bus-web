@@ -41,7 +41,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             console.log('⏰ Auth initialization timeout, setting loading to false');
             setLoading(false);
           }
-        }, 5000); // 5 second timeout
+        }, 8000); // 8 second timeout
 
         // Get initial session
         const { data: { session }, error } = await supabase.auth.getSession();
@@ -131,26 +131,60 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUserProfile(data);
         setLoading(false);
       } else {
-        console.log('⏳ No profile found, waiting for creation...');
-        // Wait a bit for the trigger to create the profile
-        setTimeout(async () => {
-          const { data: retryData, error: retryError } = await supabase
-            .from('users')
-            .select('*')
-            .eq('id', userId)
-            .maybeSingle();
-
-          if (retryData) {
-            console.log('✅ Profile found on retry:', { name: retryData.name, role: retryData.role });
-            setUserProfile(retryData);
-          } else {
-            console.log('❌ Still no profile found after retry');
-          }
-          setLoading(false);
-        }, 2000);
+        console.log('⏳ No profile found, attempting to create...');
+        // Try to create the profile if it doesn't exist
+        await createUserProfile(userId);
       }
     } catch (error) {
       console.error('❌ Error fetching user profile:', error);
+      setLoading(false);
+    }
+  };
+
+  const createUserProfile = async (userId: string) => {
+    try {
+      console.log('🔨 Creating user profile for:', userId);
+      
+      // Get user data from auth metadata
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !user) {
+        console.error('❌ Error getting user data:', userError);
+        setLoading(false);
+        return;
+      }
+
+      const metadata = user.user_metadata || {};
+      console.log('📋 User metadata:', metadata);
+
+      // Create profile with metadata or defaults
+      const profileData = {
+        id: userId,
+        email: user.email!,
+        name: metadata.name || 'User',
+        university_id: metadata.university_id || `TEMP_${userId.substring(0, 8)}`,
+        mobile: metadata.mobile || '',
+        gender: metadata.gender || 'Male',
+        role: metadata.role || 'student'
+      };
+
+      const { data, error } = await supabase
+        .from('users')
+        .insert([profileData])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('❌ Error creating user profile:', error);
+        setLoading(false);
+        return;
+      }
+
+      console.log('✅ Profile created successfully:', data);
+      setUserProfile(data);
+      setLoading(false);
+    } catch (error) {
+      console.error('❌ Error creating user profile:', error);
       setLoading(false);
     }
   };
@@ -195,6 +229,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
       }
 
+      // If user is immediately confirmed, create profile
+      if (authData.user && authData.session) {
+        console.log('✅ User immediately confirmed, creating profile');
+        await createUserProfile(authData.user.id);
+      }
+
       return { error: null };
     } catch (error) {
       console.error('❌ Signup error:', error);
@@ -216,15 +256,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error && error.message.includes('Invalid login credentials')) {
         console.log('🔍 Email login failed, trying university ID lookup');
         try {
-          const { data: emailData, error: emailError } = await supabase
-            .rpc('get_user_email_by_university_id', { 
-              university_id_param: identifier 
-            });
+          const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('email')
+            .eq('university_id', identifier)
+            .single();
 
-          if (!emailError && emailData) {
+          if (!userError && userData) {
             console.log('✅ Found email for university ID');
             const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-              email: emailData,
+              email: userData.email,
               password,
             });
             data = authData;
@@ -237,6 +278,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) {
         console.error('❌ Login error:', error);
+        
+        // Provide more specific error messages
+        if (error.message?.includes('Email not confirmed')) {
+          return { error: { ...error, message: 'Please check your email and click the confirmation link before signing in.' } };
+        } else if (error.message?.includes('Invalid login credentials')) {
+          return { error: { ...error, message: 'Invalid email/university ID or password. Please check your credentials.' } };
+        }
       } else {
         console.log('✅ Login successful:', data?.user?.email);
       }

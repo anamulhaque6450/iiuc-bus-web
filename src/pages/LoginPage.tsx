@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Bus, Lock, User, Eye, EyeOff, AlertCircle, Loader2, Mail, Info } from 'lucide-react';
+import { Bus, Lock, User, Eye, EyeOff, AlertCircle, Loader2, Mail, Info, CheckCircle } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
   const { signIn, user, userProfile, loading } = useAuth();
@@ -46,19 +46,16 @@ const LoginPage: React.FC = () => {
       return;
     }
 
-    const { error } = await signIn(formData.identifier, formData.password);
+    try {
+      const { error } = await signIn(formData.identifier, formData.password);
 
-    if (error) {
-      console.error('Login error:', error);
-      if (error.message?.includes('Email not confirmed')) {
-        setError('Please check your email and click the confirmation link before signing in.');
-      } else if (error.message?.includes('Invalid login credentials')) {
-        setError('Invalid email/university ID or password. Please check your credentials and try again.');
-      } else if (error.message?.includes('too_many_requests')) {
-        setError('Too many login attempts. Please wait a moment before trying again.');
-      } else {
+      if (error) {
+        console.error('Login error:', error);
         setError(error.message || 'Login failed. Please try again.');
       }
+    } catch (err) {
+      console.error('Unexpected login error:', err);
+      setError('An unexpected error occurred. Please try again.');
     }
 
     setIsLoading(false);
@@ -113,12 +110,12 @@ const LoginPage: React.FC = () => {
                 </div>
                 
                 {/* Email verification reminder */}
-                {error.includes('Invalid') && (
+                {error.includes('confirmation') && (
                   <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start space-x-3">
                     <Mail className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
                     <div className="text-sm text-blue-700">
-                      <p className="font-medium mb-1">Recently signed up?</p>
-                      <p>Check your email for a verification link. You must verify your email address before you can log in.</p>
+                      <p className="font-medium mb-1">Email Verification Required</p>
+                      <p>Please check your email inbox and click the verification link. After verification, you can sign in here.</p>
                     </div>
                   </div>
                 )}
@@ -205,13 +202,13 @@ const LoginPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Info Notice */}
-          <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
+          {/* Success Notice for New Users */}
+          <div className="mt-6 p-4 bg-green-50 rounded-xl border border-green-200">
             <div className="flex items-start space-x-3">
-              <Info className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
-              <div className="text-sm text-blue-700">
-                <p className="font-semibold mb-1">Getting Started:</p>
-                <p>Create a new account using the signup page. After email verification, you can log in with your credentials.</p>
+              <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+              <div className="text-sm text-green-700">
+                <p className="font-semibold mb-1">Just Verified Your Email?</p>
+                <p>Perfect! You can now sign in with the credentials you used during registration.</p>
               </div>
             </div>
           </div>
