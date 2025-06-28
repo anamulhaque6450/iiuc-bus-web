@@ -12,21 +12,23 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.error('Please check your .env file contains:');
   console.error('VITE_SUPABASE_URL=your_supabase_url');
   console.error('VITE_SUPABASE_ANON_KEY=your_supabase_anon_key');
-  throw new Error('Missing Supabase environment variables');
+  // Don't throw error, just log it to prevent app crash
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '');
 
-// Test the connection
-supabase.auth.getSession().then(({ data, error }) => {
-  if (error) {
-    console.error('❌ Supabase connection error:', error);
-  } else {
-    console.log('✅ Supabase connected successfully');
-  }
-}).catch((error) => {
-  console.error('❌ Supabase connection failed:', error);
-});
+// Test the connection only if we have valid credentials
+if (supabaseUrl && supabaseAnonKey) {
+  supabase.auth.getSession().then(({ data, error }) => {
+    if (error) {
+      console.error('❌ Supabase connection error:', error);
+    } else {
+      console.log('✅ Supabase connected successfully');
+    }
+  }).catch((error) => {
+    console.error('❌ Supabase connection failed:', error);
+  });
+}
 
 // Database types
 export interface User {
