@@ -31,7 +31,7 @@ const LoginPage: React.FC = () => {
     const { error } = await signIn(formData.identifier, formData.password);
 
     if (error) {
-      setError(error.message || 'Login failed. Please check your credentials.');
+      setError('Invalid login credentials. Please check your email/university ID and password.');
     }
 
     setIsLoading(false);
@@ -173,13 +173,12 @@ const LoginPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Demo Credentials */}
-          <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
-            <p className="text-sm font-semibold text-blue-800 mb-2">Demo Credentials:</p>
-            <div className="text-xs text-blue-700 space-y-1">
-              <p><strong>Student:</strong> student@iiuc.ac.bd / password123</p>
-              <p><strong>Teacher:</strong> teacher@iiuc.ac.bd / password123</p>
-              <p><strong>Admin:</strong> admin@iiuc.ac.bd / password123</p>
+          {/* Demo Notice */}
+          <div className="mt-6 p-4 bg-amber-50 rounded-xl border border-amber-200">
+            <p className="text-sm font-semibold text-amber-800 mb-2">Demo Access:</p>
+            <div className="text-xs text-amber-700 space-y-1">
+              <p>To test the application, please create an account using the signup page.</p>
+              <p>Demo users need to be registered first before they can log in.</p>
             </div>
           </div>
         </div>

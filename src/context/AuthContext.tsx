@@ -123,19 +123,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // If email login fails, try to find user by university_id and use their email
       if (error && error.message.includes('Invalid login credentials')) {
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('email')
-          .eq('university_id', identifier)
-          .single();
+        try {
+          const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('email')
+            .eq('university_id', identifier)
+            .limit(1);
 
-        if (!userError && userData) {
-          const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-            email: userData.email,
-            password,
-          });
-          data = authData;
-          error = authError;
+          // Check if we found a user and the query was successful
+          if (!userError && userData && userData.length > 0) {
+            const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+              email: userData[0].email,
+              password,
+            });
+            data = authData;
+            error = authError;
+          }
+          // If no user found by university_id, keep the original error
+        } catch (fallbackError) {
+          // If there's an error in the fallback, keep the original authentication error
+          console.error('Fallback login error:', fallbackError);
         }
       }
 
