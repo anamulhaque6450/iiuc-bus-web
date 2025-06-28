@@ -12,12 +12,10 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.error('Please check your .env file contains:');
   console.error('VITE_SUPABASE_URL=your_supabase_url');
   console.error('VITE_SUPABASE_ANON_KEY=your_supabase_anon_key');
+  throw new Error('Missing Supabase environment variables');
 }
 
-export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co', 
-  supabaseAnonKey || 'placeholder-key'
-);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Test the connection
 supabase.auth.getSession().then(({ data, error }) => {

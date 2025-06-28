@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Bus, Lock, User, Eye, EyeOff, AlertCircle, Loader2, Mail, Info, CheckCircle } from 'lucide-react';
+import { Bus, Lock, User, Eye, EyeOff, AlertCircle, Loader2, Mail, CheckCircle } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
   const { signIn, user, userProfile, loading } = useAuth();
@@ -47,14 +47,19 @@ const LoginPage: React.FC = () => {
     }
 
     try {
+      console.log('🔐 Starting login process...');
       const { error } = await signIn(formData.identifier, formData.password);
 
       if (error) {
-        console.error('Login error:', error);
+        console.error('❌ Login error:', error);
         setError(error.message || 'Login failed. Please try again.');
+      } else {
+        console.log('✅ Login successful, waiting for redirect...');
+        // Don't set loading to false here - let the auth context handle it
+        return;
       }
     } catch (err) {
-      console.error('Unexpected login error:', err);
+      console.error('❌ Unexpected login error:', err);
       setError('An unexpected error occurred. Please try again.');
     }
 

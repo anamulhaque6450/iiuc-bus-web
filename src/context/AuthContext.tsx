@@ -29,27 +29,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     let mounted = true;
-    let timeoutId: NodeJS.Timeout;
 
     const initializeAuth = async () => {
       try {
         console.log('🔄 Initializing auth...');
         
-        // Set a timeout to ensure loading doesn't hang forever
-        timeoutId = setTimeout(() => {
-          if (mounted) {
-            console.log('⏰ Auth initialization timeout, setting loading to false');
-            setLoading(false);
-          }
-        }, 8000); // 8 second timeout
-
         // Get initial session
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
           console.error('❌ Error getting session:', error);
           if (mounted) {
-            clearTimeout(timeoutId);
             setLoading(false);
           }
           return;
@@ -67,14 +57,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (session?.user && session.user.email_confirmed_at) {
             await fetchUserProfile(session.user.id);
           } else {
-            clearTimeout(timeoutId);
             setLoading(false);
           }
         }
       } catch (error) {
         console.error('❌ Error initializing auth:', error);
         if (mounted) {
-          clearTimeout(timeoutId);
           setLoading(false);
         }
       }
@@ -105,7 +93,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return () => {
       mounted = false;
-      if (timeoutId) clearTimeout(timeoutId);
       subscription.unsubscribe();
     };
   }, []);
@@ -131,9 +118,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUserProfile(data);
         setLoading(false);
       } else {
-        console.log('⏳ No profile found, attempting to create...');
-        // Try to create the profile if it doesn't exist
-        await createUserProfile(userId);
+        console.log('⚠️ No profile found for user:', userId);
+        // Profile doesn't exist - this should have been created by the trigger
+        // Let's wait a moment and try again, or create it manually
+        setTimeout(async () => {
+          await createUserProfileManually(userId);
+        }, 1000);
       }
     } catch (error) {
       console.error('❌ Error fetching user profile:', error);
@@ -141,11 +131,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const createUserProfile = async (userId: string) => {
+  const createUserProfileManually = async (userId: string) => {
     try {
-      console.log('🔨 Creating user profile for:', userId);
+      console.log('🔨 Manually creating user profile for:', userId);
       
-      // Get user data from auth metadata
+      // Get user data from auth
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       
       if (userError || !user) {
@@ -229,12 +219,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
       }
 
-      // If user is immediately confirmed, create profile
-      if (authData.user && authData.session) {
-        console.log('✅ User immediately confirmed, creating profile');
-        await createUserProfile(authData.user.id);
-      }
-
       return { error: null };
     } catch (error) {
       console.error('❌ Signup error:', error);
@@ -298,6 +282,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     console.log('🚪 Signing out...');
+    setLoading(true);
     await supabase.auth.signOut();
     setUser(null);
     setUserProfile(null);
