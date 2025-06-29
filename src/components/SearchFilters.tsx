@@ -538,83 +538,83 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         </div>
       </div>
 
-      {/* Live Updates Coming Soon Modal - Auto-Close Fixed */}
+      {/* FIXED: Live Updates Coming Soon Modal - Mobile Responsive */}
       {showLiveUpdatesModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-slide-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-sm animate-fade-slide-up">
           {/* Backdrop */}
           <div 
             className="absolute inset-0" 
             onClick={() => setShowLiveUpdatesModal(false)}
           />
           
-          {/* Modal Content */}
-          <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden transform transition-all duration-300 scale-100">
+          {/* FIXED: Modal Content - Fully Mobile Responsive */}
+          <div className="relative w-full max-w-sm sm:max-w-md bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden transform transition-all duration-300 scale-100 max-h-[90vh] flex flex-col">
             
-            {/* Header */}
-            <div className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-600 text-white p-6 text-center relative">
+            {/* Header - Compact for Mobile */}
+            <div className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-600 text-white p-4 sm:p-6 text-center relative flex-shrink-0">
               <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22none%22 fill-rule=%22evenodd%22%3E%3Cg fill=%22%23ffffff%22 fill-opacity=%220.1%22%3E%3Ccircle cx=%2230%22 cy=%2230%22 r=%222%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
               
               <button
                 onClick={() => setShowLiveUpdatesModal(false)}
-                className="absolute top-4 right-4 p-2 hover:bg-white/20 rounded-lg transition-colors"
+                className="absolute top-3 right-3 sm:top-4 sm:right-4 p-2 hover:bg-white/20 rounded-lg transition-colors"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
 
               <div className="relative z-10">
-                <div className="bg-white/20 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                  <Zap className="h-8 w-8 animate-pulse" />
+                <div className="bg-white/20 rounded-full p-3 sm:p-4 w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 flex items-center justify-center">
+                  <Zap className="h-6 w-6 sm:h-8 sm:w-8 animate-pulse" />
                 </div>
-                <h3 className="text-xl font-bold mb-2">Live Updates</h3>
+                <h3 className="text-lg sm:text-xl font-bold mb-1 sm:mb-2">Live Updates</h3>
                 <p className="text-green-100 text-sm">Real-time schedule updates</p>
               </div>
             </div>
 
-            {/* Content */}
-            <div className="p-6 text-center">
-              <div className="mb-6">
-                <div className="bg-gradient-to-r from-orange-100 to-yellow-100 rounded-full p-3 w-12 h-12 mx-auto mb-4 flex items-center justify-center">
-                  <Sparkles className="h-6 w-6 text-orange-600" />
+            {/* FIXED: Content - Scrollable on Mobile */}
+            <div className="p-4 sm:p-6 text-center overflow-y-auto flex-1">
+              <div className="mb-4 sm:mb-6">
+                <div className="bg-gradient-to-r from-orange-100 to-yellow-100 rounded-full p-2 sm:p-3 w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 sm:mb-4 flex items-center justify-center">
+                  <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-orange-600" />
                 </div>
-                <h4 className="text-lg font-bold text-gray-900 mb-2">Coming Soon!</h4>
-                <p className="text-gray-600 leading-relaxed">
+                <h4 className="text-base sm:text-lg font-bold text-gray-900 mb-2">Coming Soon!</h4>
+                <p className="text-gray-600 leading-relaxed text-sm">
                   We're developing a real-time update system that will automatically refresh bus schedules and notify you of any changes or delays.
                 </p>
               </div>
 
-              <div className="bg-green-50 rounded-xl p-4 mb-6">
-                <h5 className="font-semibold text-green-900 mb-3 flex items-center justify-center space-x-2">
-                  <Navigation className="h-4 w-4" />
+              <div className="bg-green-50 rounded-xl p-3 sm:p-4 mb-4 sm:mb-6">
+                <h5 className="font-semibold text-green-900 mb-2 sm:mb-3 flex items-center justify-center space-x-2 text-sm sm:text-base">
+                  <Navigation className="h-3 w-3 sm:h-4 sm:w-4" />
                   <span>Upcoming Features</span>
                 </h5>
-                <ul className="text-sm text-green-700 space-y-2 text-left">
-                  <li className="flex items-center space-x-2">
-                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                <ul className="text-xs sm:text-sm text-green-700 space-y-1.5 sm:space-y-2 text-left">
+                  <li className="flex items-start space-x-2">
+                    <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></div>
                     <span>Real-time schedule updates and changes</span>
                   </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                  <li className="flex items-start space-x-2">
+                    <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></div>
                     <span>Instant notifications for delays or cancellations</span>
                   </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                  <li className="flex items-start space-x-2">
+                    <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></div>
                     <span>Live passenger count and bus capacity</span>
                   </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                  <li className="flex items-start space-x-2">
+                    <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></div>
                     <span>Weather-based schedule adjustments</span>
                   </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                  <li className="flex items-start space-x-2">
+                    <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></div>
                     <span>Emergency alerts and service announcements</span>
                   </li>
                 </ul>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 <button
                   onClick={() => setShowLiveUpdatesModal(false)}
-                  className="w-full px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl"
+                  className="w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl text-sm sm:text-base"
                 >
                   Awesome! Keep me posted
                 </button>
