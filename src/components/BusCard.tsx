@@ -92,132 +92,135 @@ const BusCard: React.FC<BusCardProps> = ({ schedule }) => {
   };
 
   return (
-    <div className="group bg-white rounded-2xl sm:rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden transform hover:-translate-y-1 relative">
+    <div className="group bg-white rounded-2xl sm:rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 ease-out border border-gray-100 overflow-hidden transform hover:-translate-y-2 hover:scale-[1.02] relative card-hover gpu-accelerated">
       
-      {/* Compact Header - Responsive */}
-      <div className="bg-gradient-to-r from-slate-50 to-gray-50 p-4 sm:p-6 border-b border-gray-100">
+      {/* Compact Header - Enhanced Smoothness */}
+      <div className="bg-gradient-to-r from-slate-50 to-gray-50 p-4 sm:p-6 border-b border-gray-100 transition-all duration-300">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3 sm:space-x-4">
-            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl sm:rounded-2xl p-2 sm:p-3">
+            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl sm:rounded-2xl p-2 sm:p-3 transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
               <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
             </div>
-            <div>
-              <span className="text-xl sm:text-2xl font-bold text-gray-900">{schedule.time}</span>
+            <div className="transform transition-all duration-300 group-hover:translate-x-1">
+              <span className="text-xl sm:text-2xl font-bold text-gray-900 transition-colors duration-300 group-hover:text-blue-600">{schedule.time}</span>
               <div className="flex items-center space-x-2 sm:space-x-3 mt-1">
                 <div className="flex items-center space-x-1">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                   <span className="text-xs text-gray-600 font-medium">Live</span>
                 </div>
                 <div className="flex items-center space-x-1 text-xs text-gray-500">
-                  <Navigation className="h-3 w-3" />
+                  <Navigation className="h-3 w-3 transition-transform duration-300 group-hover:rotate-12" />
                   <span>{getEstimatedTime()}</span>
                 </div>
               </div>
             </div>
           </div>
           
-          <div className="flex flex-col space-y-1.5 sm:space-y-2">
-            <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-bold ${getScheduleTypeColor(schedule.scheduleType)} shadow-sm`}>
+          <div className="flex flex-col space-y-1.5 sm:space-y-2 transform transition-all duration-300 group-hover:scale-105">
+            <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-bold ${getScheduleTypeColor(schedule.scheduleType)} shadow-sm transition-all duration-300 hover:shadow-md`}>
               {schedule.scheduleType === 'Friday' ? '🕌 Friday' : '📅 Regular'}
             </span>
-            <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-bold ${getDirectionColor(schedule.direction)} shadow-sm`}>
+            <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-bold ${getDirectionColor(schedule.direction)} shadow-sm transition-all duration-300 hover:shadow-md`}>
               {formatDirection(schedule.direction)}
             </span>
           </div>
         </div>
       </div>
 
-      {/* Compact Route Display - Responsive */}
+      {/* Compact Route Display - Enhanced Animations */}
       <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-        {/* Route Summary - Mobile Optimized */}
+        {/* Route Summary - Smooth Hover Effects */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-          <div className="flex items-center space-x-3 flex-1">
-            <div className="bg-green-100 rounded-xl p-2">
+          <div className="flex items-center space-x-3 flex-1 transform transition-all duration-300 group-hover:translate-x-1">
+            <div className="bg-green-100 rounded-xl p-2 transition-all duration-300 group-hover:bg-green-200 group-hover:scale-110">
               <MapPin className="h-4 w-4 text-green-600" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-bold text-gray-900 truncate text-sm sm:text-base">{schedule.startingPoint}</p>
-              <p className="text-xs sm:text-sm text-gray-500">Starting Point</p>
+              <p className="font-bold text-gray-900 truncate text-sm sm:text-base transition-colors duration-300 group-hover:text-green-600">{schedule.startingPoint}</p>
+              <p className="text-xs sm:text-sm text-gray-500 transition-colors duration-300 group-hover:text-gray-600">Starting Point</p>
             </div>
           </div>
           
-          <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 mx-auto sm:mx-4 flex-shrink-0 rotate-90 sm:rotate-0" />
+          <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 mx-auto sm:mx-4 flex-shrink-0 rotate-90 sm:rotate-0 transition-all duration-500 group-hover:text-blue-500 group-hover:scale-125 group-hover:translate-x-1" />
           
-          <div className="flex items-center space-x-3 flex-1">
-            <div className="bg-blue-100 rounded-xl p-2">
+          <div className="flex items-center space-x-3 flex-1 transform transition-all duration-300 group-hover:translate-x-1">
+            <div className="bg-blue-100 rounded-xl p-2 transition-all duration-300 group-hover:bg-blue-200 group-hover:scale-110">
               <MapPin className="h-4 w-4 text-blue-600" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-bold text-gray-900 truncate text-sm sm:text-base">{schedule.endPoint}</p>
-              <p className="text-xs sm:text-sm text-gray-500">Destination</p>
+              <p className="font-bold text-gray-900 truncate text-sm sm:text-base transition-colors duration-300 group-hover:text-blue-600">{schedule.endPoint}</p>
+              <p className="text-xs sm:text-sm text-gray-500 transition-colors duration-300 group-hover:text-gray-600">Destination</p>
             </div>
           </div>
         </div>
 
-        {/* Expandable Route Details - Responsive */}
+        {/* Expandable Route Details - Smooth Transitions */}
         <div className="space-y-2 sm:space-y-3">
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="w-full flex items-center justify-between p-2.5 sm:p-3 bg-gray-50 rounded-xl sm:rounded-2xl hover:bg-gray-100 transition-colors"
+            className="w-full flex items-center justify-between p-2.5 sm:p-3 bg-gray-50 rounded-xl sm:rounded-2xl hover:bg-gray-100 transition-all duration-300 hover:shadow-md transform hover:scale-[1.02] button-smooth"
           >
             <div className="flex items-center space-x-2">
-              <Route className="h-4 w-4 text-gray-600" />
+              <Route className="h-4 w-4 text-gray-600 transition-transform duration-300 group-hover:rotate-12" />
               <span className="text-sm font-medium text-gray-700">Route Details</span>
             </div>
-            {isExpanded ? (
-              <ChevronUp className="h-4 w-4 text-gray-500" />
-            ) : (
+            <div className={`transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}>
               <ChevronDown className="h-4 w-4 text-gray-500" />
-            )}
+            </div>
           </button>
           
-          {isExpanded && (
-            <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-indigo-100 animate-fade-slide-up">
+          <div className={`overflow-hidden transition-all duration-500 ease-out ${
+            isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          }`}>
+            <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-indigo-100 transform transition-all duration-300 hover:shadow-md">
               <p className="text-gray-700 leading-relaxed text-sm sm:text-base">{formatRoute(schedule.route)}</p>
             </div>
-          )}
+          </div>
         </div>
 
-        {/* Compact Tags - Responsive */}
+        {/* Compact Tags - Enhanced Hover Effects */}
         <div className="flex flex-wrap gap-1.5 sm:gap-2">
           {schedule.gender && (
-            <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${getGenderColor(schedule.gender)} shadow-sm`}>
+            <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${getGenderColor(schedule.gender)} shadow-sm transition-all duration-300 hover:shadow-md hover:scale-105 cursor-default`}>
               👤 {schedule.gender}
             </span>
           )}
           {schedule.busType && (
-            <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${getBusTypeColor(schedule.busType)} shadow-sm`}>
+            <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${getBusTypeColor(schedule.busType)} shadow-sm transition-all duration-300 hover:shadow-md hover:scale-105 cursor-default`}>
               🚌 {schedule.busType}
             </span>
           )}
           {(schedule.remarks || schedule.description) && (
-            <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${getRemarksColor(schedule.remarks || schedule.description)} shadow-sm`}>
+            <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${getRemarksColor(schedule.remarks || schedule.description)} shadow-sm transition-all duration-300 hover:shadow-md hover:scale-105 cursor-default`}>
               {schedule.remarks || schedule.description}
             </span>
           )}
         </div>
       </div>
 
-      {/* Enhanced Footer - Responsive */}
-      <div className="bg-gradient-to-r from-gray-50 to-slate-50 px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-100">
+      {/* Enhanced Footer - Smooth Interactions */}
+      <div className="bg-gradient-to-r from-gray-50 to-slate-50 px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-100 transition-all duration-300 group-hover:bg-gradient-to-r group-hover:from-blue-50 group-hover:to-indigo-50">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3 sm:space-x-4">
-            <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600">
-              <Bus className="h-3 w-3 sm:h-4 sm:w-4" />
+            <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600 transition-colors duration-300 group-hover:text-blue-600">
+              <Bus className="h-3 w-3 sm:h-4 sm:w-4 transition-transform duration-300 group-hover:scale-110" />
               <span>Live tracking</span>
             </div>
           </div>
           
           <div className="flex items-center space-x-2">
-            <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
+            <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium transition-all duration-300 hover:bg-green-200 hover:scale-105">
               ✓ Active
             </span>
-            <button className="p-1.5 sm:p-2 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors">
+            <button className="p-1.5 sm:p-2 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-all duration-300 hover:scale-110 hover:rotate-12 transform">
               <Navigation className="h-3 w-3 sm:h-4 sm:w-4" />
             </button>
           </div>
         </div>
       </div>
+
+      {/* Hover Glow Effect */}
+      <div className="absolute inset-0 rounded-2xl sm:rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-indigo-500/5"></div>
     </div>
   );
 };

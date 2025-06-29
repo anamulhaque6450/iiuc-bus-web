@@ -73,26 +73,26 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   };
 
   return (
-    <div className="relative">
-      {/* Main Search Container - Responsive */}
-      <div className="bg-white/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl border border-gray-200/50 p-4 sm:p-6 lg:p-8 mb-8 sm:mb-12 -mt-12 sm:-mt-16 relative z-10 overflow-hidden mx-2 sm:mx-0">
+    <div className="relative gpu-accelerated">
+      {/* Main Search Container - Enhanced Smoothness */}
+      <div className="bg-white/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl border border-gray-200/50 p-4 sm:p-6 lg:p-8 mb-8 sm:mb-12 -mt-12 sm:-mt-16 relative z-10 overflow-hidden mx-2 sm:mx-0 transform transition-all duration-500 hover:shadow-3xl hover:-translate-y-1">
         
         {/* Animated Background Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-transparent to-indigo-50/50 opacity-60"></div>
-        <div className="absolute top-0 right-0 w-32 h-32 sm:w-64 sm:h-64 bg-gradient-to-bl from-blue-100/30 to-transparent rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-24 h-24 sm:w-48 sm:h-48 bg-gradient-to-tr from-emerald-100/30 to-transparent rounded-full blur-3xl"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-transparent to-indigo-50/50 opacity-60 transition-opacity duration-500"></div>
+        <div className="absolute top-0 right-0 w-32 h-32 sm:w-64 sm:h-64 bg-gradient-to-bl from-blue-100/30 to-transparent rounded-full blur-3xl transition-all duration-700 hover:scale-110"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 sm:w-48 sm:h-48 bg-gradient-to-tr from-emerald-100/30 to-transparent rounded-full blur-3xl transition-all duration-700 hover:scale-110"></div>
 
         <div className="relative z-10">
-          {/* Enhanced Header - Responsive */}
+          {/* Enhanced Header - Smooth Animations */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 space-y-4 sm:space-y-0">
-            <div className="flex items-center space-x-3 sm:space-x-4">
+            <div className="flex items-center space-x-3 sm:space-x-4 transform transition-all duration-500 hover:scale-105">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl sm:rounded-2xl blur-lg opacity-20"></div>
-                <div className="relative bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl sm:rounded-2xl p-3 sm:p-4">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl sm:rounded-2xl blur-lg opacity-20 transition-all duration-500 group-hover:opacity-40"></div>
+                <div className="relative bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl sm:rounded-2xl p-3 sm:p-4 transform transition-all duration-300 hover:scale-110 hover:rotate-3">
                   <Sparkles className="h-5 w-5 sm:h-7 sm:w-7 text-white animate-pulse" />
                 </div>
               </div>
-              <div>
+              <div className="transform transition-all duration-300 hover:translate-x-1">
                 <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-800 bg-clip-text text-transparent">
                   Smart Search
                 </h2>
@@ -101,10 +101,10 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             </div>
             
             <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
-              {/* Active Filters Badge */}
+              {/* Active Filters Badge - Enhanced */}
               {hasActiveFilters && (
-                <div className="flex items-center space-x-2 sm:space-x-3">
-                  <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold shadow-lg">
+                <div className="flex items-center space-x-2 sm:space-x-3 transform transition-all duration-300 hover:scale-105">
+                  <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105">
                     <span className="flex items-center space-x-1 sm:space-x-2">
                       <Filter className="h-3 w-3 sm:h-4 sm:w-4" />
                       <span>{activeFilterCount} Active</span>
@@ -112,24 +112,24 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                   </div>
                   <button
                     onClick={clearAllFilters}
-                    className="group bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-medium transition-all border border-red-200 hover:border-red-300 text-xs sm:text-sm"
+                    className="group bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-medium transition-all duration-300 border border-red-200 hover:border-red-300 text-xs sm:text-sm hover:scale-105 button-smooth"
                   >
                     <span className="flex items-center space-x-1 sm:space-x-2">
-                      <X className="h-3 w-3 sm:h-4 sm:w-4 group-hover:rotate-90 transition-transform" />
+                      <X className="h-3 w-3 sm:h-4 sm:w-4 group-hover:rotate-90 transition-transform duration-300" />
                       <span>Clear All</span>
                     </span>
                   </button>
                 </div>
               )}
               
-              <div className="hidden sm:flex items-center space-x-2 text-xs sm:text-sm text-gray-500 bg-green-50 px-2 sm:px-3 py-1 sm:py-2 rounded-full border border-green-200">
+              <div className="hidden sm:flex items-center space-x-2 text-xs sm:text-sm text-gray-500 bg-green-50 px-2 sm:px-3 py-1 sm:py-2 rounded-full border border-green-200 transition-all duration-300 hover:bg-green-100 hover:scale-105">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span className="font-medium">Live Updates</span>
               </div>
             </div>
           </div>
           
-          {/* Enhanced Search Input - Responsive */}
+          {/* Enhanced Search Input - Ultra Smooth */}
           <div className="mb-6 sm:mb-8">
             <label className="block text-sm font-bold text-gray-700 mb-3 sm:mb-4 flex items-center space-x-2">
               <Search className="h-4 w-4 text-blue-500" />
@@ -137,14 +137,14 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             </label>
             
             <div className="relative group">
-              <div className={`absolute inset-0 rounded-2xl sm:rounded-3xl transition-all duration-300 ${
+              <div className={`absolute inset-0 rounded-2xl sm:rounded-3xl transition-all duration-500 ${
                 searchFocused 
-                  ? 'bg-gradient-to-r from-blue-500/20 to-indigo-500/20 blur-xl' 
+                  ? 'bg-gradient-to-r from-blue-500/20 to-indigo-500/20 blur-xl scale-105' 
                   : 'bg-gradient-to-r from-gray-200/50 to-gray-300/50 blur-lg'
               }`}></div>
               
               <div className="relative">
-                <Search className={`absolute left-4 sm:left-6 top-1/2 transform -translate-y-1/2 h-5 w-5 sm:h-6 sm:w-6 transition-all duration-200 ${
+                <Search className={`absolute left-4 sm:left-6 top-1/2 transform -translate-y-1/2 h-5 w-5 sm:h-6 sm:w-6 transition-all duration-300 ${
                   searchFocused ? 'text-blue-500 scale-110' : 'text-gray-400'
                 }`} />
                 
@@ -155,13 +155,13 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                   onFocus={() => setSearchFocused(true)}
                   onBlur={() => setSearchFocused(false)}
                   placeholder="e.g., 7:00 AM, Baroyarhat, Mirshorai, AC Bus..."
-                  className="w-full pl-12 sm:pl-16 pr-12 sm:pr-16 py-4 sm:py-5 bg-white/80 backdrop-blur-sm border-2 border-gray-200 rounded-2xl sm:rounded-3xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 text-gray-900 placeholder-gray-500 text-base sm:text-lg font-medium shadow-lg hover:shadow-xl"
+                  className="w-full pl-12 sm:pl-16 pr-12 sm:pr-16 py-4 sm:py-5 bg-white/80 backdrop-blur-sm border-2 border-gray-200 rounded-2xl sm:rounded-3xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-500 text-gray-900 placeholder-gray-500 text-base sm:text-lg font-medium shadow-lg hover:shadow-xl form-input"
                 />
                 
                 {searchTerm && (
                   <button
                     onClick={() => onSearchChange('')}
-                    className="absolute right-4 sm:right-6 top-1/2 transform -translate-y-1/2 p-2 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-red-50"
+                    className="absolute right-4 sm:right-6 top-1/2 transform -translate-y-1/2 p-2 text-gray-400 hover:text-red-500 transition-all duration-300 rounded-full hover:bg-red-50 hover:scale-110"
                   >
                     <X className="h-4 w-4 sm:h-5 sm:w-5" />
                   </button>
@@ -169,7 +169,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
               </div>
             </div>
 
-            {/* Quick Search Suggestions - Responsive */}
+            {/* Quick Search Suggestions - Enhanced Animations */}
             <div className="mt-3 sm:mt-4">
               <p className="text-sm font-semibold text-gray-600 mb-2 sm:mb-3 flex items-center space-x-2">
                 <Zap className="h-4 w-4 text-yellow-500" />
@@ -180,7 +180,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                   <button
                     key={index}
                     onClick={() => handleQuickSearch(item.label)}
-                    className={`group flex items-center space-x-1.5 sm:space-x-2 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl font-medium transition-all hover:scale-105 shadow-sm hover:shadow-md text-xs sm:text-sm ${
+                    className={`group flex items-center space-x-1.5 sm:space-x-2 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl font-medium transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md text-xs sm:text-sm button-smooth ${
                       item.color === 'blue' ? 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200' :
                       item.color === 'emerald' ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200' :
                       item.color === 'teal' ? 'bg-teal-50 text-teal-700 hover:bg-teal-100 border border-teal-200' :
@@ -190,7 +190,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                       'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200'
                     }`}
                   >
-                    <item.icon className="h-3 w-3 sm:h-4 sm:w-4 group-hover:scale-110 transition-transform" />
+                    <item.icon className="h-3 w-3 sm:h-4 sm:w-4 group-hover:scale-110 transition-transform duration-300" />
                     <span>{item.label}</span>
                   </button>
                 ))}
@@ -198,32 +198,32 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             </div>
           </div>
 
-          {/* Advanced Filters Toggle - Responsive */}
+          {/* Advanced Filters Toggle - Smooth Animation */}
           <div className="mb-4 sm:mb-6">
             <button
               onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}
-              className="group flex items-center space-x-2 sm:space-x-3 px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 rounded-xl sm:rounded-2xl font-semibold text-gray-700 transition-all border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow-md text-sm sm:text-base"
+              className="group flex items-center space-x-2 sm:space-x-3 px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 rounded-xl sm:rounded-2xl font-semibold text-gray-700 transition-all duration-300 border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow-md text-sm sm:text-base hover:scale-105 button-smooth"
             >
-              <Filter className="h-4 w-4 sm:h-5 sm:w-5 group-hover:scale-110 transition-transform" />
+              <Filter className="h-4 w-4 sm:h-5 sm:w-5 group-hover:scale-110 transition-transform duration-300" />
               <span>Advanced Filters</span>
-              <ChevronDown className={`h-4 w-4 sm:h-5 sm:w-5 transition-transform ${isAdvancedOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-500 ${isAdvancedOpen ? 'rotate-180' : ''}`} />
               {hasActiveFilters && (
-                <div className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+                <div className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full font-bold animate-pulse">
                   {activeFilterCount}
                 </div>
               )}
             </button>
           </div>
 
-          {/* Advanced Filter Grid - Responsive */}
-          <div className={`transition-all duration-500 overflow-hidden ${
-            isAdvancedOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          {/* Advanced Filter Grid - Ultra Smooth Transitions */}
+          <div className={`transition-all duration-700 ease-out overflow-hidden ${
+            isAdvancedOpen ? 'max-h-96 opacity-100 transform translate-y-0' : 'max-h-0 opacity-0 transform -translate-y-4'
           }`}>
-            <div className="bg-gradient-to-br from-gray-50/80 to-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-200/50">
+            <div className="bg-gradient-to-br from-gray-50/80 to-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-200/50 transform transition-all duration-500 hover:shadow-lg">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
                 
-                {/* Route/Area Filter */}
-                <div className="space-y-2 sm:space-y-3">
+                {/* Route/Area Filter - Enhanced */}
+                <div className="space-y-2 sm:space-y-3 transform transition-all duration-300 hover:scale-105">
                   <label className="block text-sm font-bold text-gray-700 flex items-center space-x-2">
                     <Route className="h-4 w-4 text-emerald-500" />
                     <span>Route/Area</span>
@@ -232,19 +232,19 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                     <select
                       value={routeFilter}
                       onChange={(e) => onRouteFilterChange(e.target.value as RouteFilter)}
-                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200 text-gray-900 appearance-none cursor-pointer hover:bg-gray-50 font-medium shadow-sm text-sm sm:text-base"
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-300 text-gray-900 appearance-none cursor-pointer hover:bg-gray-50 font-medium shadow-sm text-sm sm:text-base form-input"
                     >
                       <option value="All">All Areas</option>
                       {routeAreas.map((area) => (
                         <option key={area} value={area}>{area}</option>
                       ))}
                     </select>
-                    <ChevronDown className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 pointer-events-none" />
+                    <ChevronDown className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 pointer-events-none transition-transform duration-300 group-hover:scale-110" />
                   </div>
                 </div>
 
-                {/* Schedule Type Filter */}
-                <div className="space-y-2 sm:space-y-3">
+                {/* Schedule Type Filter - Enhanced */}
+                <div className="space-y-2 sm:space-y-3 transform transition-all duration-300 hover:scale-105">
                   <label className="block text-sm font-bold text-gray-700 flex items-center space-x-2">
                     <Calendar className="h-4 w-4 text-blue-500" />
                     <span>Schedule Type</span>
@@ -253,18 +253,18 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                     <select
                       value={scheduleType}
                       onChange={(e) => onScheduleTypeChange(e.target.value as ScheduleType)}
-                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-gray-900 appearance-none cursor-pointer hover:bg-gray-50 font-medium shadow-sm text-sm sm:text-base"
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 text-gray-900 appearance-none cursor-pointer hover:bg-gray-50 font-medium shadow-sm text-sm sm:text-base form-input"
                     >
                       <option value="All">All Schedules</option>
                       <option value="Regular">Regular (Sat-Wed)</option>
                       <option value="Friday">Friday Only</option>
                     </select>
-                    <ChevronDown className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 pointer-events-none" />
+                    <ChevronDown className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 pointer-events-none transition-transform duration-300 group-hover:scale-110" />
                   </div>
                 </div>
 
-                {/* Direction Filter */}
-                <div className="space-y-2 sm:space-y-3">
+                {/* Direction Filter - Enhanced */}
+                <div className="space-y-2 sm:space-y-3 transform transition-all duration-300 hover:scale-105">
                   <label className="block text-sm font-bold text-gray-700 flex items-center space-x-2">
                     <MapPin className="h-4 w-4 text-purple-500" />
                     <span>Direction</span>
@@ -273,7 +273,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                     <select
                       value={direction}
                       onChange={(e) => onDirectionChange(e.target.value as Direction)}
-                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-200 text-gray-900 appearance-none cursor-pointer hover:bg-gray-50 font-medium shadow-sm text-sm sm:text-base"
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 text-gray-900 appearance-none cursor-pointer hover:bg-gray-50 font-medium shadow-sm text-sm sm:text-base form-input"
                     >
                       <option value="All">All Directions</option>
                       <option value="CityToIIUC">City → IIUC</option>
@@ -281,12 +281,12 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                       <option value="ToUniversity">To University</option>
                       <option value="FromUniversity">From University</option>
                     </select>
-                    <ChevronDown className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 pointer-events-none" />
+                    <ChevronDown className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 pointer-events-none transition-transform duration-300 group-hover:scale-110" />
                   </div>
                 </div>
 
-                {/* Gender Filter */}
-                <div className="space-y-2 sm:space-y-3">
+                {/* Gender Filter - Enhanced */}
+                <div className="space-y-2 sm:space-y-3 transform transition-all duration-300 hover:scale-105">
                   <label className="block text-sm font-bold text-gray-700 flex items-center space-x-2">
                     <Users className="h-4 w-4 text-pink-500" />
                     <span>Gender</span>
@@ -295,18 +295,18 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                     <select
                       value={gender}
                       onChange={(e) => onGenderChange(e.target.value as Gender)}
-                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:ring-4 focus:ring-pink-500/20 focus:border-pink-500 transition-all duration-200 text-gray-900 appearance-none cursor-pointer hover:bg-gray-50 font-medium shadow-sm text-sm sm:text-base"
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:ring-4 focus:ring-pink-500/20 focus:border-pink-500 transition-all duration-300 text-gray-900 appearance-none cursor-pointer hover:bg-gray-50 font-medium shadow-sm text-sm sm:text-base form-input"
                     >
                       <option value="All">All</option>
                       <option value="Male">Male</option>
                       <option value="Female">Female</option>
                     </select>
-                    <ChevronDown className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 pointer-events-none" />
+                    <ChevronDown className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 pointer-events-none transition-transform duration-300 group-hover:scale-110" />
                   </div>
                 </div>
 
-                {/* Bus Type Filter */}
-                <div className={`space-y-2 sm:space-y-3 ${scheduleType !== 'Friday' ? 'opacity-50' : ''}`}>
+                {/* Bus Type Filter - Enhanced */}
+                <div className={`space-y-2 sm:space-y-3 transform transition-all duration-300 hover:scale-105 ${scheduleType !== 'Friday' ? 'opacity-50' : ''}`}>
                   <label className="block text-sm font-bold text-gray-700 flex items-center space-x-2">
                     <Bus className="h-4 w-4 text-indigo-500" />
                     <span>Bus Type</span>
@@ -316,7 +316,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                       value={busType}
                       onChange={(e) => onBusTypeChange(e.target.value as BusType)}
                       disabled={scheduleType !== 'Friday'}
-                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 text-gray-900 appearance-none cursor-pointer hover:bg-gray-50 disabled:cursor-not-allowed disabled:bg-gray-100 font-medium shadow-sm text-sm sm:text-base"
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-300 text-gray-900 appearance-none cursor-pointer hover:bg-gray-50 disabled:cursor-not-allowed disabled:bg-gray-100 font-medium shadow-sm text-sm sm:text-base form-input"
                     >
                       <option value="All">All Bus Types</option>
                       <option value="IIUC Bus">IIUC Bus</option>
@@ -324,17 +324,17 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                       <option value="AC Bus">AC Bus</option>
                       <option value="Non-AC Bus">Non-AC Bus</option>
                     </select>
-                    <ChevronDown className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 pointer-events-none" />
+                    <ChevronDown className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 pointer-events-none transition-transform duration-300 group-hover:scale-110" />
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Filter Info Cards - Responsive */}
+          {/* Filter Info Cards - Enhanced Animations */}
           <div className="mt-4 sm:mt-6 grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
             {scheduleType !== 'Friday' && (
-              <div className="p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl sm:rounded-2xl border border-blue-200 shadow-sm">
+              <div className="p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl sm:rounded-2xl border border-blue-200 shadow-sm transform transition-all duration-300 hover:scale-105 hover:shadow-md">
                 <div className="flex items-center space-x-2 mb-1">
                   <Bus className="h-4 w-4 text-blue-600" />
                   <span className="text-sm font-bold text-blue-700">Bus Type Filter</span>
@@ -346,7 +346,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             )}
             
             {routeFilter !== 'All' && (
-              <div className="p-3 sm:p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl sm:rounded-2xl border border-emerald-200 shadow-sm">
+              <div className="p-3 sm:p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl sm:rounded-2xl border border-emerald-200 shadow-sm transform transition-all duration-300 hover:scale-105 hover:shadow-md">
                 <div className="flex items-center space-x-2 mb-1">
                   <Route className="h-4 w-4 text-emerald-600" />
                   <span className="text-sm font-bold text-emerald-700">Route Filter Active</span>
