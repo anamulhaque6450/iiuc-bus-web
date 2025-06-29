@@ -50,6 +50,17 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showLiveUpdatesModal, setShowLiveUpdatesModal] = useState(false);
 
+  // Auto-close modal after 5 seconds
+  useEffect(() => {
+    if (showLiveUpdatesModal) {
+      const timer = setTimeout(() => {
+        setShowLiveUpdatesModal(false);
+      }, 5000); // Auto-close after 5 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [showLiveUpdatesModal]);
+
   // Enhanced search suggestions based on current input
   useEffect(() => {
     if (searchTerm.length > 0) {
@@ -527,7 +538,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         </div>
       </div>
 
-      {/* Live Updates Coming Soon Modal */}
+      {/* Live Updates Coming Soon Modal - Auto-Close Fixed */}
       {showLiveUpdatesModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-slide-up">
           {/* Backdrop */}
@@ -609,7 +620,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                 </button>
                 
                 <p className="text-xs text-gray-500">
-                  We'll notify you when live updates are available
+                  This message will close automatically in a few seconds
                 </p>
               </div>
             </div>

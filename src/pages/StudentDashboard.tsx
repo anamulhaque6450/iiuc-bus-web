@@ -33,6 +33,27 @@ const StudentDashboard: React.FC = () => {
   const [submittingComplaint, setSubmittingComplaint] = useState(false);
   const [complaintSuccess, setComplaintSuccess] = useState(false);
 
+  // Auto-close modals after 5 seconds
+  useEffect(() => {
+    if (showTrackingModal) {
+      const timer = setTimeout(() => {
+        setShowTrackingModal(false);
+      }, 5000); // Auto-close after 5 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [showTrackingModal]);
+
+  useEffect(() => {
+    if (showRouteInfo) {
+      const timer = setTimeout(() => {
+        setShowRouteInfo(false);
+      }, 8000); // Auto-close after 8 seconds (longer for route info)
+
+      return () => clearTimeout(timer);
+    }
+  }, [showRouteInfo]);
+
   useEffect(() => {
     fetchData();
   }, [userProfile]);
@@ -761,7 +782,7 @@ const StudentDashboard: React.FC = () => {
                   onClick={() => setShowComplaintForm(false)}
                   className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
                 >
-                  ✕
+                  <X className="h-5 w-5" />
                 </button>
               </div>
 
@@ -887,7 +908,7 @@ const StudentDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* Bus Tracking Coming Soon Modal */}
+      {/* Bus Tracking Coming Soon Modal - Auto-Close Fixed */}
       {showTrackingModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div 
@@ -930,19 +951,25 @@ const StudentDashboard: React.FC = () => {
                   </ul>
                 </div>
 
-                <button
-                  onClick={() => setShowTrackingModal(false)}
-                  className="px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors font-semibold"
-                >
-                  Got it!
-                </button>
+                <div className="space-y-3">
+                  <button
+                    onClick={() => setShowTrackingModal(false)}
+                    className="w-full px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors font-semibold"
+                  >
+                    Got it!
+                  </button>
+                  
+                  <p className="text-xs text-gray-500">
+                    This message will close automatically in a few seconds
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Route Information Modal */}
+      {/* Route Information Modal - Auto-Close Fixed */}
       {showRouteInfo && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div 
@@ -1014,7 +1041,10 @@ const StudentDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex justify-end">
+                <div className="flex justify-between items-center">
+                  <p className="text-xs text-gray-500">
+                    This message will close automatically in a few seconds
+                  </p>
                   <button
                     onClick={() => setShowRouteInfo(false)}
                     className="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors font-semibold"

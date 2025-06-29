@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Clock, MapPin, Route, ArrowRight, Users, Bus, Calendar, Star, Navigation, ChevronDown, ChevronUp, Zap, Sparkles, X } from 'lucide-react';
 import { BusSchedule } from '../types/BusSchedule';
 
@@ -9,6 +9,17 @@ interface BusCardProps {
 const BusCard: React.FC<BusCardProps> = ({ schedule }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showLiveTrackingModal, setShowLiveTrackingModal] = useState(false);
+
+  // Auto-close modal after 5 seconds
+  useEffect(() => {
+    if (showLiveTrackingModal) {
+      const timer = setTimeout(() => {
+        setShowLiveTrackingModal(false);
+      }, 5000); // Auto-close after 5 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [showLiveTrackingModal]);
 
   const getDirectionColor = (direction: string) => {
     switch (direction) {
@@ -235,7 +246,7 @@ const BusCard: React.FC<BusCardProps> = ({ schedule }) => {
         <div className="absolute inset-0 rounded-2xl sm:rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-indigo-500/5"></div>
       </div>
 
-      {/* Live Tracking Coming Soon Modal */}
+      {/* Live Tracking Coming Soon Modal - Auto-Close Fixed */}
       {showLiveTrackingModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-slide-up">
           {/* Backdrop */}
@@ -317,7 +328,7 @@ const BusCard: React.FC<BusCardProps> = ({ schedule }) => {
                 </button>
                 
                 <p className="text-xs text-gray-500">
-                  We'll notify you when live tracking becomes available
+                  This message will close automatically in a few seconds
                 </p>
               </div>
             </div>
