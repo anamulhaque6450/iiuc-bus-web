@@ -26,6 +26,11 @@ const HomePage: React.FC = () => {
     routeAreas,
     filteredSchedules,
     isSearching,
+    resetAllFilters,
+    applyQuickFilter,
+    totalFiltered,
+    totalAvailable,
+    activeFilterCount,
   } = useSearch(busSchedules);
 
   return (
@@ -52,6 +57,11 @@ const HomePage: React.FC = () => {
             routeFilter={routeFilter}
             onRouteFilterChange={setRouteFilter}
             routeAreas={routeAreas}
+            totalFiltered={totalFiltered}
+            totalAvailable={totalAvailable}
+            activeFilterCount={activeFilterCount}
+            onResetFilters={resetAllFilters}
+            onQuickFilter={applyQuickFilter}
           />
         </div>
         
