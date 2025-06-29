@@ -69,52 +69,52 @@ const Header: React.FC = () => {
   </div>
 </div>
 
-          {/* Enhanced Quick Stats - Ultra Smooth Hover Effects */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mt-12 sm:mt-16 lg:mt-20 px-4">
+          {/* FIXED: Mobile Stats Boxes - Now All 3 Boxes Show on Mobile */}
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 lg:gap-8 mt-12 sm:mt-16 lg:mt-20 px-2 sm:px-4">
             
-            {/* Daily Schedules Box - Enhanced */}
-            <div className="group bg-gradient-to-br from-blue-900/40 to-indigo-900/40 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-white/10 animate-fade-slide-up hover:shadow-2xl hover:scale-105 transition-all duration-500 hover:border-blue-400/30 cursor-pointer card-hover transform-gpu" style={{ animationDelay: '0.9s' }}>
-              <div className="flex items-center justify-center space-x-2 sm:space-x-3 mb-2">
+            {/* Daily Schedules Box - Mobile Optimized */}
+            <div className="group bg-gradient-to-br from-blue-900/40 to-indigo-900/40 backdrop-blur-sm rounded-lg sm:rounded-2xl p-2 sm:p-4 lg:p-6 border border-white/10 animate-fade-slide-up hover:shadow-2xl hover:scale-105 transition-all duration-500 hover:border-blue-400/30 cursor-pointer card-hover transform-gpu" style={{ animationDelay: '0.9s' }}>
+              <div className="flex flex-col items-center justify-center space-y-1 sm:space-y-2 mb-1 sm:mb-2">
                 <div className="relative">
                   <div className="absolute inset-0 bg-blue-400 rounded-full blur-md opacity-30 group-hover:opacity-50 transition-opacity duration-500"></div>
-                  <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-blue-300 animate-pulse-grow relative z-10 group-hover:scale-110 transition-transform duration-300" />
+                  <Clock className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-blue-300 animate-pulse-grow relative z-10 group-hover:scale-110 transition-transform duration-300" />
                 </div>
-                <span className="text-xl sm:text-2xl font-bold text-white group-hover:text-blue-200 transition-colors duration-300">50+</span>
+                <span className="text-base sm:text-xl lg:text-2xl font-bold text-white group-hover:text-blue-200 transition-colors duration-300">50+</span>
               </div>
-              <p className="text-blue-200 text-xs sm:text-sm group-hover:text-white transition-colors duration-300">Daily Schedules</p>
+              <p className="text-blue-200 text-xs sm:text-sm group-hover:text-white transition-colors duration-300 text-center leading-tight">Daily Schedules</p>
               
               {/* Hover Effect Glow - Enhanced */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/5 to-blue-500/0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/5 to-blue-500/0 rounded-lg sm:rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             </div>
             
-            {/* Routes Available Box - Enhanced */}
-            <div className="group bg-gradient-to-br from-emerald-900/40 to-green-900/40 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-white/10 animate-fade-slide-up hover:shadow-2xl hover:scale-105 transition-all duration-500 hover:border-emerald-400/30 cursor-pointer card-hover transform-gpu" style={{ animationDelay: '1.1s' }}>
-              <div className="flex items-center justify-center space-x-2 sm:space-x-3 mb-2">
+            {/* Routes Available Box - Mobile Optimized */}
+            <div className="group bg-gradient-to-br from-emerald-900/40 to-green-900/40 backdrop-blur-sm rounded-lg sm:rounded-2xl p-2 sm:p-4 lg:p-6 border border-white/10 animate-fade-slide-up hover:shadow-2xl hover:scale-105 transition-all duration-500 hover:border-emerald-400/30 cursor-pointer card-hover transform-gpu" style={{ animationDelay: '1.1s' }}>
+              <div className="flex flex-col items-center justify-center space-y-1 sm:space-y-2 mb-1 sm:mb-2">
                 <div className="relative">
                   <div className="absolute inset-0 bg-emerald-400 rounded-full blur-md opacity-30 group-hover:opacity-50 transition-opacity duration-500"></div>
-                  <Bus className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-300 animate-pulse-grow relative z-10 group-hover:scale-110 transition-transform duration-300" />
+                  <Bus className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-emerald-300 animate-pulse-grow relative z-10 group-hover:scale-110 transition-transform duration-300" />
                 </div>
-                <span className="text-xl sm:text-2xl font-bold text-white group-hover:text-emerald-200 transition-colors duration-300">15+</span>
+                <span className="text-base sm:text-xl lg:text-2xl font-bold text-white group-hover:text-emerald-200 transition-colors duration-300">15+</span>
               </div>
-              <p className="text-blue-200 text-xs sm:text-sm group-hover:text-white transition-colors duration-300">Routes Available</p>
+              <p className="text-blue-200 text-xs sm:text-sm group-hover:text-white transition-colors duration-300 text-center leading-tight">Routes Available</p>
               
               {/* Hover Effect Glow - Enhanced */}
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/5 to-emerald-500/0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/5 to-emerald-500/0 rounded-lg sm:rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             </div>
             
-            {/* Service Support Box - Enhanced */}
-            <div className="group bg-gradient-to-br from-purple-900/40 to-violet-900/40 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-white/10 animate-fade-slide-up hover:shadow-2xl hover:scale-105 transition-all duration-500 hover:border-purple-400/30 cursor-pointer sm:col-span-1 card-hover transform-gpu" style={{ animationDelay: '1.3s' }}>
-              <div className="flex items-center justify-center space-x-2 sm:space-x-3 mb-2">
+            {/* Service Support Box - Mobile Optimized */}
+            <div className="group bg-gradient-to-br from-purple-900/40 to-violet-900/40 backdrop-blur-sm rounded-lg sm:rounded-2xl p-2 sm:p-4 lg:p-6 border border-white/10 animate-fade-slide-up hover:shadow-2xl hover:scale-105 transition-all duration-500 hover:border-purple-400/30 cursor-pointer card-hover transform-gpu" style={{ animationDelay: '1.3s' }}>
+              <div className="flex flex-col items-center justify-center space-y-1 sm:space-y-2 mb-1 sm:mb-2">
                 <div className="relative">
                   <div className="absolute inset-0 bg-purple-400 rounded-full blur-md opacity-30 group-hover:opacity-50 transition-opacity duration-500"></div>
-                  <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6 text-purple-300 animate-pulse-grow relative z-10 group-hover:scale-110 transition-transform duration-300" />
+                  <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-purple-300 animate-pulse-grow relative z-10 group-hover:scale-110 transition-transform duration-300" />
                 </div>
-                <span className="text-xl sm:text-2xl font-bold text-white group-hover:text-purple-200 transition-colors duration-300">24/7</span>
+                <span className="text-base sm:text-xl lg:text-2xl font-bold text-white group-hover:text-purple-200 transition-colors duration-300">24/7</span>
               </div>
-              <p className="text-blue-200 text-xs sm:text-sm group-hover:text-white transition-colors duration-300">Service Support</p>
+              <p className="text-blue-200 text-xs sm:text-sm group-hover:text-white transition-colors duration-300 text-center leading-tight">Service Support</p>
               
               {/* Hover Effect Glow - Enhanced */}
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/5 to-purple-500/0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/5 to-purple-500/0 rounded-lg sm:rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             </div>
           </div>
         </div>
