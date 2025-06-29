@@ -574,31 +574,31 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ schedules }) => {
         </button>
       </div>
 
-      {/* Chat Window - Conditional rendering with proper z-index */}
+      {/* FIXED: Chat Window - Mobile Responsive with Proper Sizing */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-slide-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 animate-fade-slide-up">
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50 backdrop-blur-sm" 
             onClick={() => setIsOpen(false)}
           />
           
-          {/* Chat Container */}
-          <div className="relative w-full max-w-md sm:max-w-lg lg:max-w-xl h-full max-h-[90vh] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden">
+          {/* FIXED: Chat Container - Mobile First Design */}
+          <div className="relative w-full h-full sm:w-full sm:max-w-lg sm:h-auto sm:max-h-[90vh] bg-white rounded-none sm:rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden">
             
-            {/* Header */}
-            <div className="bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-600 text-white p-4 flex items-center justify-between flex-shrink-0">
-              <div className="flex items-center space-x-3">
+            {/* Header - Mobile Optimized */}
+            <div className="bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-600 text-white p-3 sm:p-4 flex items-center justify-between flex-shrink-0">
+              <div className="flex items-center space-x-2 sm:space-x-3">
                 <div className="relative">
-                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                    <Bot className="h-6 w-6" />
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-full flex items-center justify-center">
+                    <Bot className="h-4 w-4 sm:h-6 sm:w-6" />
                   </div>
-                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white"></div>
+                  <div className="absolute -bottom-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-green-400 rounded-full border-2 border-white"></div>
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg">Smart Bus Assistant</h3>
-                  <p className="text-blue-100 text-sm flex items-center space-x-1">
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <h3 className="font-bold text-base sm:text-lg">Smart Bus Assistant</h3>
+                  <p className="text-blue-100 text-xs sm:text-sm flex items-center space-x-1">
+                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full animate-pulse"></div>
                     <span>AI-Powered & Ready</span>
                   </p>
                 </div>
@@ -609,26 +609,26 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ schedules }) => {
                 className="p-2 hover:bg-white/20 rounded-lg transition-colors"
                 type="button"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
             </div>
 
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 min-h-0">
+            {/* FIXED: Messages - Mobile Scrollable */}
+            <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 bg-gray-50 min-h-0">
               {messages.map((message) => (
                 <div key={message.id} className={`flex ${message.isBot ? 'justify-start' : 'justify-end'}`}>
-                  <div className={`max-w-[85%] px-4 py-3 rounded-2xl ${
+                  <div className={`max-w-[85%] px-3 sm:px-4 py-2 sm:py-3 rounded-2xl ${
                     message.isBot 
                       ? 'bg-white text-gray-800 shadow-md border border-gray-200' 
                       : 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
                   }`}>
                     
                     {/* Message Header */}
-                    <div className="flex items-center space-x-2 mb-2">
+                    <div className="flex items-center space-x-2 mb-1 sm:mb-2">
                       {message.isBot ? (
-                        <Bot className="h-4 w-4 text-blue-500" />
+                        <Bot className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
                       ) : (
-                        <User className="h-4 w-4 text-white" />
+                        <User className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                       )}
                       <span className="text-xs opacity-75">
                         {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -636,18 +636,18 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ schedules }) => {
                     </div>
 
                     {/* Message Text */}
-                    <p className="text-sm leading-relaxed whitespace-pre-line">{message.text}</p>
+                    <p className="text-xs sm:text-sm leading-relaxed whitespace-pre-line">{message.text}</p>
 
                     {/* Suggestions */}
                     {message.suggestions && (
-                      <div className="mt-3 space-y-2">
+                      <div className="mt-2 sm:mt-3 space-y-2">
                         <p className="text-xs opacity-75 font-medium">Quick actions:</p>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-1 sm:gap-2">
                           {message.suggestions.map((suggestion, index) => (
                             <button
                               key={index}
                               onClick={() => handleSuggestionClick(suggestion)}
-                              className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-medium hover:bg-blue-100 transition-colors border border-blue-200"
+                              className="px-2 sm:px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-medium hover:bg-blue-100 transition-colors border border-blue-200"
                               type="button"
                             >
                               {suggestion}
@@ -663,13 +663,13 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ schedules }) => {
               {/* Typing Indicator */}
               {isTyping && (
                 <div className="flex justify-start">
-                  <div className="bg-white text-gray-800 px-4 py-3 rounded-2xl shadow-md border border-gray-200 max-w-xs">
+                  <div className="bg-white text-gray-800 px-3 sm:px-4 py-2 sm:py-3 rounded-2xl shadow-md border border-gray-200 max-w-xs">
                     <div className="flex items-center space-x-2">
-                      <Bot className="h-4 w-4 text-blue-500" />
+                      <Bot className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
                       <div className="flex space-x-1">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                        <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                        <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                        <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                       </div>
                       <span className="text-xs text-gray-500">AI analyzing...</span>
                     </div>
@@ -680,9 +680,9 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ schedules }) => {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input */}
-            <div className="p-4 border-t border-gray-200 bg-white flex-shrink-0">
-              <div className="flex items-center space-x-3">
+            {/* FIXED: Input - Mobile Optimized */}
+            <div className="p-3 sm:p-4 border-t border-gray-200 bg-white flex-shrink-0">
+              <div className="flex items-center space-x-2 sm:space-x-3">
                 <div className="flex-1 relative">
                   <input
                     ref={inputRef}
@@ -690,28 +690,28 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ schedules }) => {
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    placeholder="Ask: 'Buses from BOT at 7:00 AM' or 'Female buses morning'"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm"
+                    placeholder="Ask: 'Buses from BOT at 7:00 AM'"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-xl sm:rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-xs sm:text-sm"
                     disabled={isTyping}
                   />
                   
-                  {/* Quick Action Buttons */}
+                  {/* Quick Action Buttons - Mobile Sized */}
                   <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
                     <button
                       onClick={() => handleSuggestionClick("Buses from BOT at 7:00 AM")}
-                      className="p-1.5 text-gray-400 hover:text-blue-500 transition-colors"
+                      className="p-1 text-gray-400 hover:text-blue-500 transition-colors"
                       title="BOT buses"
                       type="button"
                     >
-                      <Bus className="h-4 w-4" />
+                      <Bus className="h-3 w-3 sm:h-4 sm:w-4" />
                     </button>
                     <button
                       onClick={() => handleSuggestionClick("Who is Anamul Haque?")}
-                      className="p-1.5 text-gray-400 hover:text-purple-500 transition-colors"
+                      className="p-1 text-gray-400 hover:text-purple-500 transition-colors"
                       title="Developer info"
                       type="button"
                     >
-                      <User className="h-4 w-4" />
+                      <User className="h-3 w-3 sm:h-4 sm:w-4" />
                     </button>
                   </div>
                 </div>
@@ -719,16 +719,16 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ schedules }) => {
                 <button
                   onClick={handleSendMessage}
                   disabled={!inputText.trim() || isTyping}
-                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:from-gray-300 disabled:to-gray-400 text-white p-3 rounded-2xl transition-all shadow-lg hover:shadow-xl disabled:cursor-not-allowed"
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:from-gray-300 disabled:to-gray-400 text-white p-2 sm:p-3 rounded-xl sm:rounded-2xl transition-all shadow-lg hover:shadow-xl disabled:cursor-not-allowed"
                   type="button"
                 >
-                  <Send className="h-5 w-5" />
+                  <Send className="h-4 w-4 sm:h-5 sm:w-5" />
                 </button>
               </div>
 
-              {/* Powered by indicator */}
+              {/* Powered by indicator - Mobile Sized */}
               <div className="flex items-center justify-center mt-2 text-xs text-gray-500">
-                <Sparkles className="h-3 w-3 mr-1" />
+                <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1" />
                 <span>Smart AI • Real-time Bus Intelligence</span>
               </div>
             </div>

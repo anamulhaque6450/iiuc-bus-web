@@ -15,13 +15,13 @@ const Footer: React.FC = () => {
       </div>
 
       <div className="relative container mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-8 sm:pb-12 lg:pb-16">
-        {/* Main Footer Content - Responsive Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-12 mb-8 sm:mb-12">
+        {/* FIXED: Main Footer Content - Mobile First Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-12 mb-8 sm:mb-12">
           
-          {/* IIUC Transport Cell - Simplified */}
-          <div className="space-y-4 sm:space-y-6">
+          {/* IIUC Transport Cell - Mobile Optimized */}
+          <div className="space-y-3 sm:space-y-4 lg:space-y-6">
             <div>
-              <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+              <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2 sm:mb-3 lg:mb-4 bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
                 IIUC Transport
               </h3>
               <p className="text-gray-300 leading-relaxed text-sm">
@@ -29,7 +29,7 @@ const Footer: React.FC = () => {
               </p>
             </div>
             
-            {/* Simplified Contact Info - Mobile Optimized */}
+            {/* Contact Info - Mobile Stack */}
             <div className="space-y-2 sm:space-y-3">
               <a 
                 href="tel:+880-31-2510500"
@@ -60,9 +60,9 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Quick Actions - More User Focused */}
-          <div className="space-y-4 sm:space-y-6">
-            <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">
+          {/* Quick Links - Mobile Optimized */}
+          <div className="space-y-3 sm:space-y-4 lg:space-y-6">
+            <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2 sm:mb-3 lg:mb-4 bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">
               Quick Links
             </h3>
             <div className="space-y-2 sm:space-y-3">
@@ -112,12 +112,12 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Service Hours - Cleaner Layout */}
-          <div className="space-y-4 sm:space-y-6">
-            <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
+          {/* Service Hours - Mobile Stack */}
+          <div className="space-y-3 sm:space-y-4 lg:space-y-6">
+            <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2 sm:mb-3 lg:mb-4 bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
               Service Hours
             </h3>
-            <div className="space-y-3 sm:space-y-4">
+            <div className="space-y-2 sm:space-y-3 lg:space-y-4">
               <div className="bg-white/5 rounded-xl p-3 sm:p-4 border border-white/10">
                 <div className="flex items-center space-x-2 mb-2">
                   <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400" />
@@ -138,9 +138,9 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Simplified Statistics - Mobile Grid */}
-          <div className="space-y-4 sm:space-y-6">
-            <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+          {/* Statistics - Mobile 2x2 Grid */}
+          <div className="space-y-3 sm:space-y-4 lg:space-y-6">
+            <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2 sm:mb-3 lg:mb-4 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
               Service Stats
             </h3>
             <div className="grid grid-cols-2 gap-2 sm:gap-3">
@@ -171,9 +171,9 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Enhanced Bottom Section with Developer Contact - Responsive */}
+        {/* FIXED: Bottom Section - Mobile Responsive */}
         <div className="border-t border-gray-800 pt-6 sm:pt-8">
-          <div className="flex flex-col lg:flex-row justify-between items-center space-y-4 sm:space-y-6 lg:space-y-0">
+          <div className="flex flex-col space-y-4 sm:space-y-6 lg:flex-row lg:justify-between lg:items-center lg:space-y-0">
             <div className="text-center lg:text-left">
               <p className="text-gray-400 text-xs sm:text-sm">
                 © 2025 IIUC Bus Finder. All rights reserved.
@@ -187,19 +187,19 @@ const Footer: React.FC = () => {
               </p>
             </div>
             
-            {/* Enhanced Developer Contact Section - Mobile Optimized */}
+            {/* FIXED: Developer Contact Section - Mobile Stack */}
             <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-4 border border-blue-500/20 w-full lg:w-auto">
               <div className="text-center lg:text-left mb-2 sm:mb-3">
                 <span className="text-gray-300 text-xs sm:text-sm">Developed by</span>
                 <span className="text-white font-semibold text-xs sm:text-sm ml-2">Md Anamul Haque</span>
               </div>
               
-              {/* Developer Contact Info - Mobile Stack */}
-              <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center lg:justify-start gap-2 sm:gap-4">
+              {/* FIXED: Developer Contact Info - Mobile Stack */}
+              <div className="space-y-2 sm:space-y-0 sm:flex sm:flex-wrap sm:items-center sm:justify-center lg:justify-start sm:gap-2 lg:gap-4">
                 {/* Phone */}
                 <a
                   href="tel:+8801680478706"
-                  className="flex items-center space-x-1.5 sm:space-x-2 text-green-300 hover:text-green-400 transition-colors group"
+                  className="flex items-center justify-center sm:justify-start space-x-1.5 sm:space-x-2 text-green-300 hover:text-green-400 transition-colors group"
                 >
                   <div className="bg-green-500/20 rounded-lg p-1 group-hover:bg-green-500/30 transition-colors">
                     <Phone className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
@@ -210,7 +210,7 @@ const Footer: React.FC = () => {
                 {/* Email */}
                 <a
                   href="mailto:anamulshakib6450@gmail.com"
-                  className="flex items-center space-x-1.5 sm:space-x-2 text-blue-300 hover:text-blue-400 transition-colors group"
+                  className="flex items-center justify-center sm:justify-start space-x-1.5 sm:space-x-2 text-blue-300 hover:text-blue-400 transition-colors group"
                 >
                   <div className="bg-blue-500/20 rounded-lg p-1 group-hover:bg-blue-500/30 transition-colors">
                     <Mail className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
@@ -218,8 +218,8 @@ const Footer: React.FC = () => {
                   <span className="text-xs font-medium">Email</span>
                 </a>
                 
-                {/* Social Links - Compact */}
-                <div className="flex items-center space-x-2 sm:space-x-3">
+                {/* Social Links - Mobile Center */}
+                <div className="flex items-center justify-center space-x-2 sm:space-x-3">
                   <a
                     href="https://github.com/Anamulc211001"
                     target="_blank"
