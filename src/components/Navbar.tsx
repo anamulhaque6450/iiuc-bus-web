@@ -101,13 +101,13 @@ const Navbar: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16 sm:h-20">
           
-          {/* Logo Section - Enhanced Mobile Responsiveness */}
+          {/* FIXED: Logo Section - Better Mobile Layout */}
           <Link 
             to="/" 
             onClick={handleLinkClick}
-            className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0"
+            className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0 min-w-0"
           >
-            <div className="relative">
+            <div className="relative flex-shrink-0">
               <div className={`absolute inset-0 rounded-full blur-lg opacity-30 transition-colors ${
                 isScrolled ? 'bg-blue-400' : 'bg-white'
               }`}></div>
@@ -124,46 +124,49 @@ const Navbar: React.FC = () => {
               </div>
             </div>
             
-            {/* Desktop Logo Text - Full Title */}
-            <div className="hidden md:block">
-              <h1 className={`text-lg sm:text-xl font-bold transition-colors ${
-                isScrolled ? 'text-gray-900' : 'text-white'
-              }`}>
-                IIUC Bus Finder
-              </h1>
-              <p className={`text-xs sm:text-sm transition-colors ${
-                isScrolled ? 'text-gray-600' : 'text-blue-200'
-              }`}>
-                Smart Transport Solution
-              </p>
-            </div>
-            
-            {/* Tablet Logo Text - Medium Title */}
-            <div className="hidden sm:block md:hidden">
-              <h1 className={`text-base sm:text-lg font-bold transition-colors ${
-                isScrolled ? 'text-gray-900' : 'text-white'
-              }`}>
-                IIUC Bus Finder
-              </h1>
-              <p className={`text-xs transition-colors ${
-                isScrolled ? 'text-gray-600' : 'text-blue-200'
-              }`}>
-                Transport Solution
-              </p>
-            </div>
-            
-            {/* Mobile Logo Text - Full Title (Fixed) */}
-            <div className="block sm:hidden">
-              <h1 className={`text-sm font-bold transition-colors leading-tight ${
-                isScrolled ? 'text-gray-900' : 'text-white'
-              }`}>
-                IIUC Bus Finder
-              </h1>
-              <p className={`text-xs transition-colors leading-tight ${
-                isScrolled ? 'text-gray-600' : 'text-blue-200'
-              }`}>
-                Smart Transport
-              </p>
+            {/* FIXED: Logo Text - Responsive with Better Mobile Handling */}
+            <div className="min-w-0 flex-1">
+              {/* Desktop Logo Text - Full Title */}
+              <div className="hidden lg:block">
+                <h1 className={`text-lg sm:text-xl font-bold transition-colors truncate ${
+                  isScrolled ? 'text-gray-900' : 'text-white'
+                }`}>
+                  IIUC Bus Finder
+                </h1>
+                <p className={`text-xs sm:text-sm transition-colors truncate ${
+                  isScrolled ? 'text-gray-600' : 'text-blue-200'
+                }`}>
+                  Smart Transport Solution
+                </p>
+              </div>
+              
+              {/* Tablet Logo Text - Medium Title */}
+              <div className="hidden sm:block lg:hidden">
+                <h1 className={`text-base sm:text-lg font-bold transition-colors truncate ${
+                  isScrolled ? 'text-gray-900' : 'text-white'
+                }`}>
+                  IIUC Bus Finder
+                </h1>
+                <p className={`text-xs transition-colors truncate ${
+                  isScrolled ? 'text-gray-600' : 'text-blue-200'
+                }`}>
+                  Transport Solution
+                </p>
+              </div>
+              
+              {/* FIXED: Mobile Logo Text - Compact but Complete */}
+              <div className="block sm:hidden">
+                <h1 className={`text-sm font-bold transition-colors leading-tight truncate ${
+                  isScrolled ? 'text-gray-900' : 'text-white'
+                }`}>
+                  IIUC Bus Finder
+                </h1>
+                <p className={`text-xs transition-colors leading-tight truncate ${
+                  isScrolled ? 'text-gray-600' : 'text-blue-200'
+                }`}>
+                  Smart Transport
+                </p>
+              </div>
             </div>
           </Link>
 
@@ -218,8 +221,8 @@ const Navbar: React.FC = () => {
             </button>
           </div>
 
-          {/* Right Side Actions - Completely Redesigned for Mobile */}
-          <div className="flex items-center space-x-2 sm:space-x-3">
+          {/* FIXED: Right Side Actions - Properly Aligned for Mobile */}
+          <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
             
             {/* Desktop User Authentication Section */}
             {user && userProfile ? (
@@ -286,34 +289,38 @@ const Navbar: React.FC = () => {
               <span>Contact</span>
             </a>
 
-            {/* Mobile Contact Button - Compact */}
+            {/* FIXED: Mobile Contact Button - Properly Sized */}
             <a
               href="tel:+880-31-2510500"
-              className={`lg:hidden p-2.5 rounded-xl transition-all shadow-md ${
+              className={`lg:hidden p-2 rounded-lg transition-all shadow-sm flex-shrink-0 ${
                 isScrolled 
                   ? 'text-gray-700 hover:bg-gray-100 border border-gray-200' 
                   : 'text-white hover:bg-white/10 border border-white/20'
               }`}
+              aria-label="Call IIUC Transport"
             >
               <Phone className="h-4 w-4" />
             </a>
 
-            {/* Mobile Menu Button - Enhanced with User Indicator */}
+            {/* FIXED: Mobile Menu Button - Properly Positioned and Sized */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className={`lg:hidden relative p-2.5 rounded-xl transition-all shadow-md border ${
+              className={`lg:hidden relative p-2 rounded-lg transition-all shadow-sm border flex-shrink-0 ${
                 isScrolled 
                   ? 'text-gray-700 hover:bg-gray-100 border-gray-200' 
                   : 'text-white hover:bg-white/10 border-white/20'
               }`}
               aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
             >
-              {/* User Status Indicator */}
+              {/* FIXED: User Status Indicator - Better Positioning */}
               {user && userProfile && (
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border border-white"></div>
               )}
               
-              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {/* FIXED: Menu Icon - Consistent Size */}
+              <div className="w-5 h-5 flex items-center justify-center">
+                {isMobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              </div>
             </button>
           </div>
         </div>
@@ -327,10 +334,10 @@ const Navbar: React.FC = () => {
               onClick={() => setIsMobileMenuOpen(false)}
             />
             
-            {/* Mobile Menu Container */}
+            {/* FIXED: Mobile Menu Container - Better Positioning */}
             <div 
               ref={mobileMenuRef}
-              className="lg:hidden absolute top-full left-4 right-4 mt-2 bg-white/95 backdrop-blur-md border border-gray-200/50 shadow-2xl rounded-2xl overflow-hidden animate-fade-slide-up z-50"
+              className="lg:hidden absolute top-full left-2 right-2 sm:left-4 sm:right-4 mt-2 bg-white/95 backdrop-blur-md border border-gray-200/50 shadow-2xl rounded-2xl overflow-hidden animate-fade-slide-up z-50"
             >
               <div className="max-h-[80vh] overflow-y-auto">
                 <div className="p-4 space-y-3">
@@ -344,7 +351,7 @@ const Navbar: React.FC = () => {
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="font-semibold text-gray-900 text-sm truncate">{userProfile.name}</p>
-                          <p className="text-xs text-gray-600">{userProfile.university_id} • {userProfile.role}</p>
+                          <p className="text-xs text-gray-600 truncate">{userProfile.university_id} • {userProfile.role}</p>
                         </div>
                       </div>
                     </div>
@@ -356,7 +363,7 @@ const Navbar: React.FC = () => {
                       onClick={() => scrollToSection('home')}
                       className="flex items-center space-x-3 w-full px-3 py-2.5 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-all text-sm font-medium"
                     >
-                      <Bus className="h-4 w-4" />
+                      <Bus className="h-4 w-4 flex-shrink-0" />
                       <span>Home</span>
                     </button>
                     
@@ -364,7 +371,7 @@ const Navbar: React.FC = () => {
                       onClick={() => scrollToSection('search-filters')}
                       className="flex items-center space-x-3 w-full px-3 py-2.5 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-all text-sm font-medium"
                     >
-                      <Search className="h-4 w-4" />
+                      <Search className="h-4 w-4 flex-shrink-0" />
                       <span>Search Schedules</span>
                     </button>
                     
@@ -372,7 +379,7 @@ const Navbar: React.FC = () => {
                       onClick={() => scrollToSection('schedules')}
                       className="flex items-center space-x-3 w-full px-3 py-2.5 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-all text-sm font-medium"
                     >
-                      <Clock className="h-4 w-4" />
+                      <Clock className="h-4 w-4 flex-shrink-0" />
                       <span>All Schedules</span>
                     </button>
                     
@@ -380,7 +387,7 @@ const Navbar: React.FC = () => {
                       onClick={() => scrollToSection('routes')}
                       className="flex items-center space-x-3 w-full px-3 py-2.5 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-all text-sm font-medium"
                     >
-                      <MapPin className="h-4 w-4" />
+                      <MapPin className="h-4 w-4 flex-shrink-0" />
                       <span>Route Information</span>
                     </button>
                   </div>
