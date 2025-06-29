@@ -47,10 +47,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return;
         }
         
-        // Get initial session with timeout
+        // Get initial session with increased timeout
         const sessionPromise = supabase.auth.getSession();
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Session timeout')), 2000)
+          setTimeout(() => reject(new Error('Session timeout')), 8000) // Increased from 2000 to 8000ms
         );
         
         const { data: { session }, error } = await Promise.race([
@@ -89,13 +89,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     };
 
-    // Set a maximum initialization time - CRITICAL FIX
+    // Set a maximum initialization time with increased timeout
     initTimeout = setTimeout(() => {
       if (mounted && loading) {
         console.log('⏰ Auth initialization timeout - forcing load completion');
         setLoading(false);
       }
-    }, 1500); // Reduced to 1.5 seconds
+    }, 10000); // Increased from 1500 to 10000ms
 
     initializeAuth();
 
@@ -133,7 +133,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('👤 Fetching profile for user:', userId);
       
-      // Add timeout to profile fetch
+      // Add increased timeout to profile fetch
       const profilePromise = supabase
         .from('users')
         .select('*')
@@ -141,7 +141,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .maybeSingle();
         
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Profile fetch timeout')), 3000)
+        setTimeout(() => reject(new Error('Profile fetch timeout')), 10000) // Increased from 3000 to 10000ms
       );
 
       const { data, error } = await Promise.race([
