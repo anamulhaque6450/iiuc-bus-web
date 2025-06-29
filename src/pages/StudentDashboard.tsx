@@ -4,7 +4,7 @@ import { supabase, BusScheduleDB, Feedback, Complaint } from '../lib/supabase';
 import { 
   Bus, User, MessageSquare, Send, Clock, MapPin, Route, Calendar, LogOut, Loader2, 
   Star, Navigation, AlertTriangle, CheckCircle, FileText, Plus, Filter, Eye, Search,
-  ArrowRight, TrendingUp, BarChart3
+  ArrowRight, TrendingUp, BarChart3, X, Zap, Sparkles
 } from 'lucide-react';
 import BusCard from '../components/BusCard';
 import { BusSchedule } from '../types/BusSchedule';
@@ -887,10 +887,15 @@ const StudentDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* Bus Tracking Modal */}
+      {/* Bus Tracking Coming Soon Modal */}
       {showTrackingModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-lg">
+          <div 
+            className="absolute inset-0" 
+            onClick={() => setShowTrackingModal(false)}
+          />
+          
+          <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h4 className="text-xl font-bold text-gray-900">Track My Bus</h4>
@@ -898,7 +903,7 @@ const StudentDashboard: React.FC = () => {
                   onClick={() => setShowTrackingModal(false)}
                   className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
                 >
-                  ✕
+                  <X className="h-5 w-5" />
                 </button>
               </div>
 
@@ -912,12 +917,16 @@ const StudentDashboard: React.FC = () => {
                 </p>
                 
                 <div className="bg-blue-50 rounded-xl p-4 mb-6">
-                  <h6 className="font-semibold text-blue-900 mb-2">Coming Features:</h6>
+                  <h6 className="font-semibold text-blue-900 mb-2 flex items-center justify-center space-x-2">
+                    <Sparkles className="h-4 w-4" />
+                    <span>Coming Features</span>
+                  </h6>
                   <ul className="text-sm text-blue-700 space-y-1">
                     <li>• Live bus locations on map</li>
                     <li>• Estimated arrival times</li>
                     <li>• Route progress tracking</li>
                     <li>• Push notifications</li>
+                    <li>• Delay alerts</li>
                   </ul>
                 </div>
 
@@ -936,7 +945,12 @@ const StudentDashboard: React.FC = () => {
       {/* Route Information Modal */}
       {showRouteInfo && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div 
+            className="absolute inset-0" 
+            onClick={() => setShowRouteInfo(false)}
+          />
+          
+          <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white rounded-2xl shadow-2xl border border-gray-200">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h4 className="text-xl font-bold text-gray-900">Route Information</h4>
@@ -944,7 +958,7 @@ const StudentDashboard: React.FC = () => {
                   onClick={() => setShowRouteInfo(false)}
                   className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
                 >
-                  ✕
+                  <X className="h-5 w-5" />
                 </button>
               </div>
 
