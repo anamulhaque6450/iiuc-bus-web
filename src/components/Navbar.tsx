@@ -54,8 +54,8 @@ const Navbar: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16 sm:h-20">
           
-          {/* Logo Section - Responsive */}
-          <Link to="/" className="flex items-center space-x-2 sm:space-x-3">
+          {/* Logo Section - Enhanced Mobile Responsiveness */}
+          <Link to="/" className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
             <div className="relative">
               <div className={`absolute inset-0 rounded-full blur-lg opacity-30 transition-colors ${
                 isScrolled ? 'bg-blue-400' : 'bg-white'
@@ -73,7 +73,8 @@ const Navbar: React.FC = () => {
               </div>
             </div>
             
-            <div className="hidden sm:block">
+            {/* Desktop Logo Text - Full Title */}
+            <div className="hidden md:block">
               <h1 className={`text-lg sm:text-xl font-bold transition-colors ${
                 isScrolled ? 'text-gray-900' : 'text-white'
               }`}>
@@ -86,13 +87,32 @@ const Navbar: React.FC = () => {
               </p>
             </div>
             
-            {/* Mobile Logo Text */}
-            <div className="block sm:hidden">
-              <h1 className={`text-base font-bold transition-colors ${
+            {/* Tablet Logo Text - Medium Title */}
+            <div className="hidden sm:block md:hidden">
+              <h1 className={`text-base sm:text-lg font-bold transition-colors ${
                 isScrolled ? 'text-gray-900' : 'text-white'
               }`}>
-                IIUC Bus
+                IIUC Bus Finder
               </h1>
+              <p className={`text-xs transition-colors ${
+                isScrolled ? 'text-gray-600' : 'text-blue-200'
+              }`}>
+                Transport Solution
+              </p>
+            </div>
+            
+            {/* Mobile Logo Text - Compact but Full */}
+            <div className="block sm:hidden">
+              <h1 className={`text-sm font-bold transition-colors leading-tight ${
+                isScrolled ? 'text-gray-900' : 'text-white'
+              }`}>
+                IIUC Bus Finder
+              </h1>
+              <p className={`text-xs transition-colors leading-tight ${
+                isScrolled ? 'text-gray-600' : 'text-blue-200'
+              }`}>
+                Smart Transport
+              </p>
             </div>
           </Link>
 
@@ -147,58 +167,100 @@ const Navbar: React.FC = () => {
             </button>
           </div>
 
-          {/* User Actions & Mobile Menu */}
-          <div className="flex items-center space-x-2 sm:space-x-4">
+          {/* Right Side Actions - Enhanced Mobile Layout */}
+          <div className="flex items-center space-x-2 sm:space-x-3">
             
-            {/* User Authentication Section */}
+            {/* User Authentication Section - Mobile Optimized */}
             {user && userProfile ? (
-              <div className="hidden lg:flex items-center space-x-4">
+              <div className="flex items-center space-x-2 sm:space-x-3">
+                {/* Desktop Dashboard Button */}
                 <Link
                   to={getDashboardRoute()}
-                  className={`flex items-center space-x-2 px-4 py-2 sm:px-6 sm:py-3 rounded-2xl font-semibold transition-all hover:scale-105 shadow-lg ${
+                  className={`hidden lg:flex items-center space-x-2 px-4 py-2 sm:px-6 sm:py-3 rounded-2xl font-semibold transition-all hover:scale-105 shadow-lg ${
                     isScrolled 
                       ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700' 
                       : 'bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 border border-white/30'
                   }`}
                 >
                   <User className="h-4 w-4" />
-                  <span className="hidden lg:inline">Dashboard</span>
+                  <span>Dashboard</span>
                 </Link>
                 
+                {/* Mobile Dashboard Button */}
+                <Link
+                  to={getDashboardRoute()}
+                  className={`lg:hidden flex items-center space-x-1 px-3 py-2 rounded-xl font-semibold transition-all shadow-md ${
+                    isScrolled 
+                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700' 
+                      : 'bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 border border-white/30'
+                  }`}
+                >
+                  <User className="h-4 w-4" />
+                  <span className="text-sm">Dashboard</span>
+                </Link>
+                
+                {/* Desktop Logout Button */}
                 <button
                   onClick={handleLogout}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-xl font-medium transition-all ${
+                  className={`hidden lg:flex items-center space-x-2 px-4 py-2 rounded-xl font-medium transition-all ${
                     isScrolled 
                       ? 'text-red-600 hover:bg-red-50' 
                       : 'text-white hover:bg-white/10'
                   }`}
                 >
                   <LogOut className="h-4 w-4" />
-                  <span className="hidden lg:inline">Logout</span>
+                  <span>Logout</span>
                 </button>
               </div>
             ) : (
-              <div className="hidden lg:flex items-center space-x-3">
-                <Link
-                  to="/login"
-                  className={`px-4 py-2 rounded-xl font-medium transition-all ${
-                    isScrolled 
-                      ? 'text-gray-700 hover:bg-gray-100' 
-                      : 'text-white hover:bg-white/10'
-                  }`}
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/signup"
-                  className={`px-4 py-2 sm:px-6 sm:py-3 rounded-2xl font-semibold transition-all hover:scale-105 shadow-lg ${
-                    isScrolled 
-                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700' 
-                      : 'bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 border border-white/30'
-                  }`}
-                >
-                  Sign Up
-                </Link>
+              <div className="flex items-center space-x-2 sm:space-x-3">
+                {/* Desktop Auth Buttons */}
+                <div className="hidden lg:flex items-center space-x-3">
+                  <Link
+                    to="/login"
+                    className={`px-4 py-2 rounded-xl font-medium transition-all ${
+                      isScrolled 
+                        ? 'text-gray-700 hover:bg-gray-100' 
+                        : 'text-white hover:bg-white/10'
+                    }`}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className={`px-4 py-2 sm:px-6 sm:py-3 rounded-2xl font-semibold transition-all hover:scale-105 shadow-lg ${
+                      isScrolled 
+                        ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700' 
+                        : 'bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 border border-white/30'
+                    }`}
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+
+                {/* Mobile Auth Buttons - Always Visible */}
+                <div className="flex lg:hidden items-center space-x-2">
+                  <Link
+                    to="/login"
+                    className={`px-3 py-2 rounded-xl font-medium transition-all text-sm ${
+                      isScrolled 
+                        ? 'text-gray-700 hover:bg-gray-100 border border-gray-300' 
+                        : 'text-white hover:bg-white/10 border border-white/30'
+                    }`}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className={`px-3 py-2 rounded-xl font-semibold transition-all shadow-md text-sm ${
+                      isScrolled 
+                        ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700' 
+                        : 'bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 border border-white/30'
+                    }`}
+                  >
+                    Sign Up
+                  </Link>
+                </div>
               </div>
             )}
 
@@ -212,7 +274,7 @@ const Navbar: React.FC = () => {
               }`}
             >
               <Phone className="h-4 w-4" />
-              <span className="hidden lg:inline">Contact</span>
+              <span>Contact</span>
             </a>
 
             {/* Mobile Contact Button */}
@@ -224,7 +286,7 @@ const Navbar: React.FC = () => {
                   : 'text-white hover:bg-white/10'
               }`}
             >
-              <Phone className="h-5 w-5" />
+              <Phone className="h-4 w-4 sm:h-5 sm:w-5" />
             </a>
 
             {/* Mobile Menu Button */}
